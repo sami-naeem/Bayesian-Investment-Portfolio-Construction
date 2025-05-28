@@ -110,6 +110,32 @@ How it works:
 ### 3. Minimum CVaR Portfolio (at level α)
 
 
+$$
+\begin{aligned}
+\min_{w,\,\zeta}\quad & \zeta \;+\;\frac{1}{\alpha\,S}\sum_{s=1}^S \max\bigl\{-w^\top r_s - \zeta,\;0\bigr\} \\[6pt]
+\text{subject to}\quad 
+& \mathbf{1}^\top w = 1, \\ 
+& w_i \ge 0,\quad i=1,\dots,N.
+\end{aligned}
+$$
+
+
+The inner term is the CVaR at level~\(\alpha\), defined as
+
+$$
+\mathrm{CVaR}_\alpha(w)
+=
+\zeta \;+\;\frac{1}{\alpha\,S}\sum_{s=1}^S \max\{L_s - \zeta,\,0\},
+\quad
+L_s = -\,w^\top r_s,
+$$
+
+where
+- \(S\) is the number of simulated scenarios,  
+- \(r_s\in\mathbb{R}^N\) are the asset returns in scenario \(s\),  
+- \(\zeta\) is the VaR (i.e.\ the \(\alpha\)-quantile loss),  
+- \(\alpha\in(0,1)\) is the tail probability.
+
 
 How it works: 
 
@@ -272,8 +298,8 @@ L \sim \mathrm{LKJCholeskyCov}\bigl(\eta,\;\mathrm{sd\_dist}\bigr),
 $$
 
 
-- **LKJ–Cholesky:**  
-  Rather than sampling a full correlation matrix directly, we sample its Cholesky factor **L** from the LKJ distribution. This ensures positive-definiteness and efficient sampling in PyMC/PyMC3
+**LKJ–Cholesky:**  
+Rather than sampling a full correlation matrix directly, we sample its Cholesky factor **L** from the LKJ distribution. This ensures positive-definiteness and efficient sampling in PyMC/PyMC3
     
 
 #### Likelihood
@@ -325,7 +351,7 @@ The investor‐tilt parameter **η** controls how strongly we believe correlatio
 
 ---
 
-#### Asset-Class–Specific Tilt Values
+#### Asset-Class Specific Tilt Values
 
 Apply the following η values to your tilt vector. Asset classes not listed are left un-tilted (η = 0).
 
