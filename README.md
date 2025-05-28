@@ -118,7 +118,7 @@ $$
 
 ---
 
-**Value-at-Risk at level (α):**
+**Value-at-Risk at level (α)**
 
 $$
 \mathrm{VaR}_\alpha(\mathbf{w})
@@ -127,7 +127,7 @@ $$
 
 ---
 
-**Conditional Value-at-Risk at level (α):**
+**Conditional Value-at-Risk at level (α)**
 
 $$
 \mathrm{CVaR}_\alpha(\mathbf{w})
@@ -136,7 +136,6 @@ $$
 \quad \eta = \mathrm{VaR}_\alpha(\mathbf{w}).
 $$
 
----
 
 **Optimization problem:**
 
