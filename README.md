@@ -110,21 +110,42 @@ How it works:
 ### 3. Minimum CVaR Portfolio (at level α)
 
 
+**Portfolio return for scenario \(s\):**  
+$$
+R_p^{(s)} \;=\;\sum_{i=1}^n w_i\,r_i^{(s)}, 
+\quad s = 1,\dots,S.
+$$
+
+---
+
+**Value-at-Risk at level \(\alpha\):**  
+$$
+\mathrm{VaR}_\alpha(\mathbf w)
+= \min\Bigl\{v : \tfrac{1}{S}\sum_{s=1}^S \mathbf{1}\{R_p^{(s)} \le v\} \ge \alpha\Bigr\}.
+$$
+
+---
+
+**Conditional VaR at level \(\alpha\):**  
+Using the “excess‐loss” definition,
+$$
+\mathrm{CVaR}_\alpha(\mathbf w)
+= \eta \;+\;\frac{1}{S(1-\alpha)}
+\sum_{s=1}^S \max\bigl\{ -R_p^{(s)} - \eta,\;0\bigr\},
+$$
+where \(\eta = \mathrm{VaR}_\alpha(\mathbf w)\).
+
+---
+
+**Optimization problem:**  
 $$
 \begin{aligned}
-&\text{Portfolio return for scenario }s: 
-&&R_p^{(s)} \;=\;\sum_{i=1}^n w_i\,r_i^{(s)},\quad s=1,\dots,S,\\[6pt]
-&\text{Value‐at‐Risk at level }\alpha: 
-&&\mathrm{VaR}_\alpha(\mathbf{w}) 
-=\min\!\Bigl\{v : \frac{1}{S}\sum_{s=1}^S \mathbf{1}(R_p^{(s)} \le v) \ge \alpha\Bigr\},\\[6pt]
-&\text{Conditional VaR at level }\alpha: 
-&&\mathrm{CVaR}_\alpha(\mathbf{w}) 
-=\frac{1}{\bigl|\{s:R_p^{(s)}\le\mathrm{VaR}_\alpha(\mathbf{w})\}\bigr|}
-\sum_{s : R_p^{(s)}\le\mathrm{VaR}_\alpha(\mathbf{w})} R_p^{(s)},\\[6pt]
-&\text{Optimization problem:}
-&&\min_{\mathbf{w}}\;\mathrm{CVaR}_\alpha(\mathbf{w})
-\quad\text{subject to}\quad
-\sum_{i=1}^n w_i = 1,\;\;0\le w_i \le 1\;\forall i.
+&\min_{\mathbf w,\;\eta}\;
+\eta + \frac{1}{S(1-\alpha)}
+\sum_{s=1}^S \max\{ -R_p^{(s)} - \eta,\,0\},\\[4pt]
+&\text{s.t.}\quad
+\sum_{i=1}^n w_i = 1,\quad
+0 \le w_i \le 1\quad\forall i.
 \end{aligned}
 $$
 
