@@ -38,6 +38,27 @@
 
 The asset classes above represent the major public markets, helping effectively model public markets while minimizing model dimensionality. 
 
+
+#### Asset Class Grouping
+
+| **Asset Class**            | **Group Index** | **Group Name**           |
+|----------------------------|-----------------|--------------------------|
+| **Large Cap**              | 0               | Domestic Equity          |
+| **Mid Cap**                | 0               | Domestic Equity          |
+| **Small Cap**              | 0               | Domestic Equity          |
+| **Intl Dev Equity**        | 1               | International Equity     |
+| **Emerging Market Equity** | 1               | International Equity     |
+| **Intermediate Bonds**     | 2               | Fixed Income             |
+| **T-Bill**                 | 2               | Fixed Income             |
+| **REIT**                   | 3               | Alternatives             |
+| **Commodities**            | 3               | Alternatives             |
+
+
+##### Why group asset classes? 
+- Assets within the same category (e.g. all domestic equities) often share similar risk‐return characteristics.
+- Partial pooling of means: Instead of giving each asset its own independent prior, a group-level mean can be introduced. Enables portfolio optimization using the invesment type categories.  
+
+
 # Optimization Functions
 
 ### 1. Mean Variance Optimization 
@@ -128,10 +149,8 @@ How it works:
 
 
 
-## 2. Monte Carlo Sampling & Distribution Metrics
+## 2. Monte Carlo Sampling & Distribution Metric Portfolios
 
-
-xxx asset class sampled 
 
 **Model Details:** 
 - MC simulations: 10 000 draws
@@ -146,9 +165,6 @@ How it works:
 - Compute distribution metrics (mean, cov, VaR, CVaR).
 - Apply each of the three optimizers (mean-variance, max-Sharpe, min-CVaR) to those metrics.
 - By simulating, you capture how random fluctuations might play out and build portfolios based on the full distribution—not just point estimates.
-
-
-
 
 
 #### Parameter Estimation
@@ -182,34 +198,16 @@ $$
   \bigl(R_i^{(s)}-\mu_i^{\mathrm{sim}}\bigr)
   \bigl(R_j^{(s)}-\mu_j^{\mathrm{sim}}\bigr).
 $$
+
 $$
 \mathrm{VaR}_\alpha(w)
 = \mathrm{Quantile}\bigl\{w^\top R^{(s)},\,\alpha\bigr\},
 $$
+
 $$
 \mathrm{CVaR}_\alpha(w)
 = \mathbb{E}\bigl[w^\top R^{(s)} \mid w^\top R^{(s)} \le \mathrm{VaR}_\alpha(w)\bigr].
 $$
-
-
-#### Asset Class Grouping
-
-| **Asset Class**            | **Group Index** | **Group Name**           |
-|----------------------------|-----------------|--------------------------|
-| **Large Cap**              | 0               | Domestic Equity          |
-| **Mid Cap**                | 0               | Domestic Equity          |
-| **Small Cap**              | 0               | Domestic Equity          |
-| **Intl Dev Equity**        | 1               | International Equity     |
-| **Emerging Market Equity** | 1               | International Equity     |
-| **Intermediate Bonds**     | 2               | Fixed Income             |
-| **T-Bill**                 | 2               | Fixed Income             |
-| **REIT**                   | 3               | Alternatives             |
-| **Commodities**            | 3               | Alternatives             |
-
-
-#### Why group asset classes? 
-- Assets within the same category (e.g. all domestic equities) often share similar risk‐return characteristics.
-- Partial pooling of means: Instead of giving each asset its own independent prior, a group-level mean can be introduced. Enables portfolio optimization using the invesment type categories.  
 
 
 #### Asset Class Mapping Distributions
@@ -312,7 +310,7 @@ $$
 ![Small Cap – MCMC](./Pics/small_cap_mcmc.png)
 
 
-### Enhancement - Investr Views 
+### Enhancement - Investor Views 
 
 #### Investor Tilt (η) Interpretation
  
