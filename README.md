@@ -61,6 +61,9 @@ The asset classes above represent the major public markets, helping effectively 
 
 # Optimization Functions
 
+#### Output: Asset Class Investment Allocation Weights
+These weights will be used to construct portfolios and test the performance of all the portfolios. 
+
 ### 1. Mean Variance Optimization 
 
 
