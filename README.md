@@ -112,8 +112,8 @@ How it works:
 
 **Portfolio return for scenario \(s\):**  
 $$
-R_p^{(s)} \;=\;\sum_{i=1}^n w_i\,r_i^{(s)}, 
-\quad s = 1,\dots,S.
+R_p^{(s)} \;=\; \sum_{i=1}^n w_i\,r_i^{(s)}, 
+\quad s = 1,2,\dots,S.
 $$
 
 ---
@@ -121,31 +121,30 @@ $$
 **Value-at-Risk at level \(\alpha\):**  
 $$
 \mathrm{VaR}_\alpha(\mathbf w)
-= \min\Bigl\{v : \tfrac{1}{S}\sum_{s=1}^S \mathbf{1}\{R_p^{(s)} \le v\} \ge \alpha\Bigr\}.
+= \min\!\Bigl\{\,v : \frac{1}{S}\sum_{s=1}^S \mathbf{1}\{R_p^{(s)} \le v\} \ge \alpha\Bigr\}.
 $$
 
 ---
 
-**Conditional VaR at level \(\alpha\):**  
-Using the “excess‐loss” definition,
+**Conditional Value-at-Risk at level \(\alpha\):**  
 $$
 \mathrm{CVaR}_\alpha(\mathbf w)
-= \eta \;+\;\frac{1}{S(1-\alpha)}
-\sum_{s=1}^S \max\bigl\{ -R_p^{(s)} - \eta,\;0\bigr\},
+= \eta \;+\;\frac{1}{S\,(1-\alpha)}
+\sum_{s=1}^S \max\bigl\{-R_p^{(s)} - \eta,\,0\bigr\},
+\quad \eta = \mathrm{VaR}_\alpha(\mathbf w).
 $$
-where \(\eta = \mathrm{VaR}_\alpha(\mathbf w)\).
 
 ---
 
 **Optimization problem:**  
 $$
 \begin{aligned}
-&\min_{\mathbf w,\;\eta}\;
-\eta + \frac{1}{S(1-\alpha)}
-\sum_{s=1}^S \max\{ -R_p^{(s)} - \eta,\,0\},\\[4pt]
-&\text{s.t.}\quad
-\sum_{i=1}^n w_i = 1,\quad
-0 \le w_i \le 1\quad\forall i.
+\min_{\mathbf w,\,\eta}\quad
+&\eta \;+\;\frac{1}{S\,(1-\alpha)}
+\sum_{s=1}^S \max\{ -R_p^{(s)} - \eta,\,0\},\\[6pt]
+\text{s.t.}\quad
+&\sum_{i=1}^n w_i = 1,\quad
+0 \le w_i \le 1\;\;\forall i.
 \end{aligned}
 $$
 
