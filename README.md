@@ -5,46 +5,18 @@
 
 # Background
 
-# Model Overview
 
-Three portfolio construction models built: 
-
-1. Static-Weights Portfolios
-
-2. Monte Carlo Sampling & Distribution Metrics
-
-3. Bayesian Hierarchical MCMC Model (PyMC)
-
-
-Three portfolio optimization functions built:
-
-1. cVar (Conditional Value at Risk) Optimization
-
-2. Mean Variance Optimization
-
-3. Sharpe Ratio Maximization
-
-
-
-XXXXXXXXXXXX provide breakdown of each optimizer function ncluding what it calcualtes, business logic behind it, and how it may be better than a traditional portfolio 
-
-
-
-
-# Modelling Approach
-
-## Data
+# Data
 
 Yahoo Finance API used to retriieve investment returns data
 
 
-**Data History:**   01/01/2013 - 12/31/2024
+- **Data History:**   01/01/2013 - 12/31/2024
+- **Model training:** 01/01/2013 - 12/31/2018 ~ 6 years 
+- **Model testing:**  01/01/2019 - 12/31/2024 ~ 6 years
 
-**Model training:** 01/01/2013 - 12/31/2018 ~ 6 years 
-**Model testing:**  01/01/2019 - 12/31/2024 ~ 6 years
 
-
-Limitations (data history): 
+**Limitations (data history):** 
 - Limited data availability prior to 2010
 - Extended history needs to be analyzed to model different market cycles
 
@@ -65,7 +37,7 @@ Limitations (data history):
 | **Commodities**             | S&P GSCI Total Return Index                   | iShares S&P GSCI Commodity-Indexed Trust           | `GSG`      |
 
 
-## Optimization Functions
+# Optimization Functions
 
 ### 1. Mean Variance Optimization 
 
@@ -75,6 +47,7 @@ w \;\propto\; \Sigma^{-1}\,(\mu - r_f \,\mathbf{1})
 $$
 
 Subject to
+
 $$
 w_i \ge 0,
 \qquad
@@ -82,7 +55,7 @@ w_i \ge 0,
 $$
 
 
-## 2. Maximum Sharpe‐Ratio
+### 2. Maximum Sharpe‐Ratio
 
 
 $$
@@ -91,6 +64,7 @@ $$
 $$
 
 Maximize Sharpe\,(w) subject to
+
 $$
 w_i \ge 0,
 \qquad
@@ -98,33 +72,12 @@ w_i \ge 0,
 $$
 
 
-## 3. Minimum CVaR Portfolio (at level α)
-
-Let
-\[
-R_p = w^\top R,
-\]
-\[
-\mathrm{VaR}_\alpha(w)
-= \inf \bigl\{m: P(R_p \le m) \ge \alpha\bigr\},
-\]
-\[
-\mathrm{CVaR}_\alpha(w)
-= \mathbb{E}\bigl[R_p \mid R_p \le \mathrm{VaR}_\alpha(w)\bigr].
-\]
-
-Then solve
-```markdown
-$$
-\min_{w}\;
-\mathrm{CVaR}_\alpha(w)
-\quad\text{s.t.}\quad
-w_i \ge 0,
-\;\sum_i w_i = 1.
-$$
+### 3. Minimum CVaR Portfolio (at level α)
 
 
-## Static-Weights Portfolios 
+# Investment Portfolio Generator Models
+
+## 1. Static-Weights Portfolios 
 
 **Morningstar’s Target Allocation Index** used to determine the static portfolios:  
 
@@ -154,14 +107,8 @@ $$
 | **T-Bill**                 |       5%       |     10%      |       20%        |
 
 
-## Bayesian Optimized Portfolios 
 
-
-
-
-
-
-#### Monte Carlo Sampling & Distribution Metrics
+## 2. Monte Carlo Sampling & Distribution Metrics
 
 
 xxx asset class sampled 
@@ -177,7 +124,7 @@ xxxx Asset class distribution charts xxxxx
 
 
 
-#### Bayesian Hierarchical MCMC Model (PyMC)
+## 3. Bayesian Hierarchical MCMC Model (PyMC)
 
 **Model Details:**
 - MCMC sampling: 4 chains; 1 000 tune + 3 000 draws; target_accept = 0.95
@@ -206,7 +153,7 @@ In high dimensions, choosing η slightly above 1 (e.g.\ 1.5–2) often yields be
 
 adjusted_mu = mu_post + tilt_vector
 
-## Results 
+# Results 
 
 - Log Returns used to evalaute portfolio performance because:
   - Factors in compunding and multi-period aggregation
@@ -214,7 +161,7 @@ adjusted_mu = mu_post + tilt_vector
   - Helps capture small changes as compunding is captured over time   
 
 
-## Takeaways and Future Enhancements
+# Takeaways and Future Enhancements
 
 Modelling enhancements: 
 - A longer data history needs to be covered to include several market cycles to better model the bheavior of investment securities.
