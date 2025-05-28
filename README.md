@@ -8,12 +8,15 @@
 
 # Data
 
-Yahoo Finance API used to retriieve investment returns data
 
+**Data Source:** Yahoo Finance API
 
-- **Data History:**   01/01/2013 - 12/31/2024
-- **Model training:** 01/01/2013 - 12/31/2018 ~ 6 years 
-- **Model testing:**  01/01/2019 - 12/31/2024 ~ 6 years
+| **Phase**         | **Period**                  | **Duration** |
+|-------------------|-----------------------------|--------------|
+| Data History      | 01/01/2013 – 12/31/2024     | 12 years     |
+| Model Training    | 01/01/2013 – 12/31/2018     | 6 years      |
+| Model Testing     | 01/01/2019 – 12/31/2024     | 6 years      |
+
 
 
 **Limitations (data history):** 
@@ -21,7 +24,7 @@ Yahoo Finance API used to retriieve investment returns data
 - Extended history needs to be analyzed to model different market cycles
 
 
-**Asset Classes**
+#### Asset Classes
 
 
 | **Asset Class**             | **Benchmark Index**                          | **ETF Name**                                       | **Ticker** |
@@ -54,6 +57,13 @@ w_i \ge 0,
 \sum_{i=1}^n w_i = 1.
 $$
 
+How it works: 
+
+- Takes point estimates of expected returns (μ) and the covariance matrix (Σ), computes excess returns over a risk-free rate, then finds weights w ∝ Σ⁻¹(μ – rₙ).
+- Clips negative weights to zero (no shorting) and normalizes so that weights sum to one.
+- Allocates more to assets with high expected return relative to their contribution to overall volatility.
+
+
 
 ### 2. Maximum Sharpe‐Ratio
 
@@ -72,8 +82,20 @@ w_i \ge 0,
 $$
 
 
+How it works: 
+
+- Solves a constrained optimization to maximize Sharpe ratio.
+- Chooses the portfolio on the efficient frontier that gives the highest reward per unit of risk
+
+
 ### 3. Minimum CVaR Portfolio (at level α)
 
+
+
+How it works: 
+
+- Given a matrix of simulated returns (shape = sims × assets), defines portfolio return in each simulation and computes the Conditional Value at Risk (average of worst α-percentile losses)
+- Directly targets tail-risk: ensures that, in the worst α*100% of scenarios, the average loss is as small as possible
 
 # Investment Portfolio Generator Models
 
@@ -91,7 +113,7 @@ $$
 </p>
 
 
-**Portfolio Allocation:**
+#### Portfolio Allocation
 
 
 | **Asset Class**            | **Aggressive** | **Balanced** | **Conservative** |
@@ -120,6 +142,58 @@ xxx asset class sampled
 - Hierarchical/Multivariate Models: Used to map the relationship between the different asset classes, while minimizing overfitting.
 
 
+How it works:
+- Estimate μ and Σ from historical returns.
+- Simulate thousands of return scenarios from 𝒩(μ,Σ).
+- Compute distribution metrics (mean, cov, VaR, CVaR).
+- Apply each of the three optimizers (mean-variance, max-Sharpe, min-CVaR) to those metrics.
+- By simulating, you capture how random fluctuations might play out and build portfolios based on the full distribution—not just point estimates.
+
+
+
+
+
+#### Parameter Estimation
+
+
+$$
+\hat\mu = \frac{1}{T}\sum_{t=1}^T R_t,
+\quad
+\hat\Sigma = \frac{1}{T-1}\sum_{t=1}^T (R_t - \hat\mu)(R_t - \hat\mu)^\top.
+$$
+
+#### Simulation
+
+
+$$
+R^{(s)} \;\sim\; \mathcal{N}\bigl(\hat\mu,\;\hat\Sigma\bigr),
+\quad
+s=1,\dots,S.
+$$
+
+
+#### Metrics
+
+
+$$
+\mu_i^{\mathrm{sim}}
+= \frac{1}{S}\sum_{s=1}^S R^{(s)}_i,
+\quad
+\Sigma_{ij}^{\mathrm{sim}}
+= \frac{1}{S-1}\sum_{s=1}^S
+  \bigl(R_i^{(s)}-\mu_i^{\mathrm{sim}}\bigr)
+  \bigl(R_j^{(s)}-\mu_j^{\mathrm{sim}}\bigr).
+$$
+$$
+\mathrm{VaR}_\alpha(w)
+= \mathrm{Quantile}\bigl\{w^\top R^{(s)},\,\alpha\bigr\},
+$$
+$$
+\mathrm{CVaR}_\alpha(w)
+= \mathbb{E}\bigl[w^\top R^{(s)} \mid w^\top R^{(s)} \le \mathrm{VaR}_\alpha(w)\bigr].
+$$
+
+
 xxxx Asset class distribution charts xxxxx
 
 
@@ -132,11 +206,53 @@ xxxx Asset class distribution charts xxxxx
 - Risk‐free rate (for MC and MV): default 0% (set to 1% in model)
 - Hierarchical/Multivariate Models: Used to map the relationship between the different asset classes, while minimizing overfitting.
 
+
+How it works: 
+
+- Specify priors:
+  - μₐ ~ Normal(0,0.1) for each asset a
+  - Σ via an LKJ-Cholesky prior for correlations and Half-Normal priors for marginal SDs
+- Observe historical returns as a multivariate normal (with the Cholesky factor).
+- Sample the joint posterior of (μ,Σ) using PyMC’s NUTS.
+- Summarize the posterior: extract posterior means of μ and empirical covariance of all μ-draws.
+- Plug into the three optimizer functions to get final weights.
+- Fully accounts for uncertainty in your estimates—if data are noisy or scarce, your posterior spreads will be wider, leading to more conservative allocations.
+
+
+#### Priors
+
+\mu_i \;\sim\; \mathcal{N}(0,\,0.1^2),
+\quad
+i=1,\dots,n.
+
+
+L \;\sim\; \mathrm{LKJCholeskyCov}\bigl(\eta,\;\mathrm{sd\_dist}\bigr),
+\quad
+\Sigma = L\,L^\top.
+
+
+#### Likelihood
+
+
+R_t \;\sim\; \mathcal{N}(\mu,\,\Sigma),
+\quad
+t=1,\dots,T.
+
+
+#### Posterior
+
+
+p(\mu,\Sigma \mid R_{1:T})
+\;\propto\;
+\biggl[\prod_{t=1}^T\mathcal{N}(R_t\mid\mu,\Sigma)\biggr]
+\times \mathcal{N}(\mu\mid0,0.1^2I)
+\times \mathrm{LKJ}(\Sigma).
+
 xxxx Asset class distribution charts xxxxx
 
 
 
-##### Additional Model Enhancement
+#### Additional Model Enhancement
 
 XXXXXXXXXXXX Investr view 
 
