@@ -120,21 +120,29 @@ $$
 
 **Value-at-Risk at level (α)**
 
-$
-\mathrm{VaR}_\alpha(\mathbf{w})
-= \min\!\Bigl\{\,v : \frac{1}{S}\sum_{s=1}^S \mathbf{1}\{R_p^{(s)} \le v\} \ge \alpha\Bigr\}.
-$$
+<p align="center">
+  <img
+    alt="VaR equation"
+    src="https://latex.codecogs.com/svg.latex?
+      \mathrm{VaR}_\alpha(\mathbf{w})
+      = \min\!\bigl\{v : \tfrac{1}{S}\sum_{s=1}^S \mathbf{1}\{R_p^{(s)}\le v\}\ge\alpha\bigr\}"
+  />
+</p>
 
 ---
 
 **Conditional Value-at-Risk at level (α)**
 
-$$
-\mathrm{CVaR}_\alpha(\mathbf{w})
-= \eta 
-\;+\; \frac{1}{S\,(1-\alpha)} \sum_{s=1}^S \max\!\{ -R_p^{(s)} - \eta,\,0\},
-\quad \eta = \mathrm{VaR}_\alpha(\mathbf{w}).
-$$
+<p align="center">
+  <img
+    alt="CVaR equation"
+    src="https://latex.codecogs.com/svg.latex?
+      \mathrm{CVaR}_\alpha(\mathbf{w})
+      = \eta
+      + \tfrac{1}{S(1-\alpha)}\sum_{s=1}^S \max\{-R_p^{(s)}-\eta,0\},
+      \quad \eta = \mathrm{VaR}_\alpha(\mathbf{w})"
+  />
+</p>
 
 
 **Optimization problem:**
