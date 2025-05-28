@@ -440,24 +440,21 @@ $$
 
 # Takeaways and Future Enhancements
 
-Modelling enhancements: 
-- A longer data history needs to be covered to include several market cycles to better model the bheavior of investment securities.
-  - Compute limitations resulted in the data history being limited to 2010 and onwards.
+#### Data Modelling:
+- Longer data history needed to model different market cycles
   - Limited data history for some investment securities
-    - Data history standardization approach needs to be developed to model investment security distribuutions while accounting for varying data histories.  
+
+- Posteriors obtained from recent data history led to higher portfolio performance.
+  - Explore decay functions to place more importance on recent data   
   
+#### Portfolio Construction Engine: 
+- The Bayesian Portfolio Construction Engines output asset class weights. The asset class weights can be incorporatedas as another input in the Portfolio Construction Engine, and the weights be determined by a posterior to automate the portfolio rebalancing.
+  
+#### Guardrails - Portfolio Construction Engine: 
 
-The Bayesian models (Monte Carlo Sampling and Bayesian Hierarchical MCMC models) can be further improve by: 
-- Factoring in asset class allocation weights as part of the model. 
-
-- Bayesian Rebalance schedule
-
-Portfolio Construction guardrails: 
-
-- Limits on allocation to a specific asset class
-- Threshold specification of deviation from asset class targets that will trigger a rebalance
--  
-
+- Asset Allocation Limits: Maximum and minimum limits asset allocation Limits.
+- Asset Allocation Target Deviation Threshold: Specify threshold for trigerring a rebalance e.g. 3% overall deviation from asset class targets.
+- New Portfolio Allocation Guardrails: Factor prior portfolio allocation and implement a penalty function for deviating from prior asset classes. Penalize large asset allocation shifts to minimize large turnover. 
 
 ##### Author: Sami Naeem
 
