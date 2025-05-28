@@ -112,20 +112,20 @@ How it works:
 
 $$
 \begin{aligned}
-\min_{w,\zeta}\;&
-\zeta \;+\;\frac{1}{\alpha\,S}\sum_{s=1}^S
+\min_{w,\zeta}\quad
+&\zeta \;+\;\frac{1}{\alpha\,S}\sum_{s=1}^{S}
 \max\bigl\{-\,w^\top r_s - \zeta,\;0\bigr\}
 \\[6pt]
-\text{subject to}\;&
-\mathbf{1}^\top w = 1, \\[3pt]
+\text{subject to}\quad
+&\mathbf{1}^\top w = 1,\\
 & w_i \ge 0,\quad i = 1,\dots,N.
 \end{aligned}
 $$
 
 $$
 \mathrm{CVaR}_\alpha(w)
-\;=\;
-\zeta \;+\;\frac{1}{\alpha\,S}\sum_{s=1}^S
+=
+\zeta \;+\;\frac{1}{\alpha\,S}\sum_{s=1}^{S}
 \max\bigl\{L_s - \zeta,\;0\bigr\},
 \quad
 L_s = -\,w^\top r_s.
