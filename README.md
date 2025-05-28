@@ -112,23 +112,20 @@ How it works:
 
 $$
 \begin{aligned}
-\min_{w,\zeta}\quad
-&\zeta \;+\;\frac{1}{\alpha\,S}\sum_{s=1}^{S}
-\max\bigl\{-\,w^\top r_s - \zeta,\;0\bigr\}
-\\[6pt]
-\text{subject to}\quad
-&\mathbf{1}^\top w = 1,\\
-& w_i \ge 0,\quad i = 1,\dots,N.
+&\text{Portfolio return for scenario }s: 
+&&R_p^{(s)} \;=\;\sum_{i=1}^n w_i\,r_i^{(s)},\quad s=1,\dots,S,\\[6pt]
+&\text{Value‐at‐Risk at level }\alpha: 
+&&\mathrm{VaR}_\alpha(\mathbf{w}) 
+=\min\!\Bigl\{v : \frac{1}{S}\sum_{s=1}^S \mathbf{1}(R_p^{(s)} \le v) \ge \alpha\Bigr\},\\[6pt]
+&\text{Conditional VaR at level }\alpha: 
+&&\mathrm{CVaR}_\alpha(\mathbf{w}) 
+=\frac{1}{\bigl|\{s:R_p^{(s)}\le\mathrm{VaR}_\alpha(\mathbf{w})\}\bigr|}
+\sum_{s : R_p^{(s)}\le\mathrm{VaR}_\alpha(\mathbf{w})} R_p^{(s)},\\[6pt]
+&\text{Optimization problem:}
+&&\min_{\mathbf{w}}\;\mathrm{CVaR}_\alpha(\mathbf{w})
+\quad\text{subject to}\quad
+\sum_{i=1}^n w_i = 1,\;\;0\le w_i \le 1\;\forall i.
 \end{aligned}
-$$
-
-$$
-\mathrm{CVaR}_\alpha(w)
-=
-\zeta \;+\;\frac{1}{\alpha\,S}\sum_{s=1}^{S}
-\max\bigl\{L_s - \zeta,\;0\bigr\},
-\quad
-L_s = -\,w^\top r_s.
 $$
 
 
