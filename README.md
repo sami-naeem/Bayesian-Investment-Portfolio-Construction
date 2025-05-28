@@ -122,22 +122,21 @@ $$
 \end{aligned}
 $$
 
-
 $$
 \mathrm{CVaR}_\alpha(w)
-=
+\;=\;
 \zeta \;+\;\frac{1}{\alpha\,S}\sum_{s=1}^S
-\max\{L_s - \zeta,\;0\},
+\max\bigl\{L_s - \zeta,\;0\bigr\},
 \quad
 L_s = -\,w^\top r_s.
 $$
 
 
 where
-- \(S\) is the number of simulated scenarios,  
-- \(r_s\in\mathbb{R}^N\) are the asset returns in scenario \(s\),  
-- \(\zeta\) is the VaR (i.e.\ the \(\alpha\)-quantile loss),  
-- \(\alpha\in(0,1)\) is the tail probability.
+- $S$ is the number of simulated scenarios,
+- $r_s \in \mathbb{R}^N$ are the asset returns in scenario $s$,
+- $\zeta$ is the VaR (i.e.\ the $\alpha$-quantile loss),
+- $\alpha \in (0,1)$ is the tail probability.
 
 
 How it works: 
@@ -231,10 +230,10 @@ $$
 
 where
 
-- \(S\) is the total number of Monte Carlo samples.  
-- \(R^{(s)} = (R_1^{(s)}, \dots, R_n^{(s)})\) is the vector of simulated returns in iteration \(s\).  
-- \(\mu_i^{(\mathrm{sim})}\) is the average simulated return of asset \(i\).  
-- \(\Sigma_{ij}^{(\mathrm{sim})}\) is the sample covariance between assets \(i\) and \(j\).
+- $S$ is the total number of Monte Carlo samples.  
+- $\mathbf{r}_s = \bigl(r_{1,s},\dots,r_{N,s}\bigr)^\top$ is the vector of simulated returns in iteration $s$.  
+- $\mu_i^{(\mathrm{sim})}$ is the average simulated return of asset $i$.  
+- $\Sigma_{i,j}^{(\mathrm{sim})}$ is the sample covariance between assets $i$ and $j$.  
 
 
 #### Asset Class Mapping Distributions
