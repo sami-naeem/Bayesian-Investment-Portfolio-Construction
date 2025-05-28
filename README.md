@@ -120,7 +120,7 @@ $$
 
 **Value-at-Risk at level (α)**
 
-$$
+$
 \mathrm{VaR}_\alpha(\mathbf{w})
 = \min\!\Bigl\{\,v : \frac{1}{S}\sum_{s=1}^S \mathbf{1}\{R_p^{(s)} \le v\} \ge \alpha\Bigr\}.
 $$
