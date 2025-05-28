@@ -1,14 +1,11 @@
-# Bayesian-Investment-Portfolio-Construction
-
 <p align="center">
   <img src="Pics/header.png" alt="Bayesian Investment Portfolio Construction" />
 </p>
 
 
+# Background
 
-## Background
-
-## Model Overview
+# Model Overview
 
 Three portfolio construction models built: 
 
@@ -34,7 +31,22 @@ XXXXXXXXXXXX provide breakdown of each optimizer function ncluding what it calcu
 
 
 
-## Modelling and Problem Solving Approach
+# Modelling Approach
+
+## Data
+
+Yahoo Finance API used to retriieve investment returns data
+
+
+**Data History:**   01/01/2013 - 12/31/2024
+
+**Model training:** 01/01/2013 - 12/31/2018 ~ 6 years 
+**Model testing:**  01/01/2019 - 12/31/2024 ~ 6 years
+
+
+Limitations (data history): 
+- Limited data availability prior to 2010
+- Extended history needs to be analyzed to model different market cycles
 
 
 **Asset Classes**
@@ -53,20 +65,81 @@ XXXXXXXXXXXX provide breakdown of each optimizer function ncluding what it calcu
 | **Commodities**             | S&P GSCI Total Return Index                   | iShares S&P GSCI Commodity-Indexed Trust           | `GSG`      |
 
 
+## Optimization Functions
 
-### Static-Weights Portfolios 
+### 1. Mean Variance Optimization 
 
-Based on Morningstar’s Target Allocation Index definitions where: 
+
+$$
+w \;\propto\; \Sigma^{-1}\,(\mu - r_f \,\mathbf{1})
+$$
+
+Subject to
+$$
+w_i \ge 0,
+\qquad
+\sum_{i=1}^n w_i = 1.
+$$
+
+
+## 2. Maximum Sharpe‐Ratio
+
+
+$$
+\mathrm{Sharpe}(w)
+= \frac{w^\top \mu - r_f}{\sqrt{w^\top \Sigma\,w}}
+$$
+
+Maximize Sharpe\,(w) subject to
+$$
+w_i \ge 0,
+\qquad
+\sum_{i=1}^n w_i = 1.
+$$
+
+
+## 3. Minimum CVaR Portfolio (at level α)
+
+Let
+\[
+R_p = w^\top R,
+\]
+\[
+\mathrm{VaR}_\alpha(w)
+= \inf \bigl\{m: P(R_p \le m) \ge \alpha\bigr\},
+\]
+\[
+\mathrm{CVaR}_\alpha(w)
+= \mathbb{E}\bigl[R_p \mid R_p \le \mathrm{VaR}_\alpha(w)\bigr].
+\]
+
+Then solve
+```markdown
+$$
+\min_{w}\;
+\mathrm{CVaR}_\alpha(w)
+\quad\text{s.t.}\quad
+w_i \ge 0,
+\;\sum_i w_i = 1.
+$$
+
+
+## Static-Weights Portfolios 
+
+**Morningstar’s Target Allocation Index** used to determine the static portfolios:  
 
 - **Aggressive**: 90% equity, 5% bonds, 5% cash
 - **Balanced**: 60% equity, 30% bonds, 10% cash
 - **Conservative**: 30% equity, 50% bonds, 20% cash
 
+
 <p align="center">
   <img src="Pics/static_portfolio_equity_fi_split.png" alt="Static Portfolio Equity/Fixed Income Split" />
 </p>
 
+
 **Portfolio Allocation:**
+
 
 | **Asset Class**            | **Aggressive** | **Balanced** | **Conservative** |
 |----------------------------|:--------------:|:------------:|:----------------:|
@@ -81,26 +154,23 @@ Based on Morningstar’s Target Allocation Index definitions where:
 | **T-Bill**                 |       5%       |     10%      |       20%        |
 
 
-XXXXXXXXXXXX conserv, bala, agg flow chart XXXXXXXXXXXX
-
-xxxx
-
-### Bayesian Optimized Portfolios 
-
-- Hierarchical/Multivariate Models: Used to map the relationship between the different asset classes, while minimizing overfitting.
-- 
+## Bayesian Optimized Portfolios 
 
 
-Date range
-Model training:  
-Model testing: 
+
+
+
 
 #### Monte Carlo Sampling & Distribution Metrics
 
 
 xxx asset class sampled 
 
-Modelling details 
+**Model Details:** 
+- MC simulations: 10 000 draws
+
+- Risk‐free rate (for MC and MV): default 0% (set to 1% in model)
+- Hierarchical/Multivariate Models: Used to map the relationship between the different asset classes, while minimizing overfitting.
 
 
 xxxx Asset class distribution charts xxxxx
@@ -109,7 +179,11 @@ xxxx Asset class distribution charts xxxxx
 
 #### Bayesian Hierarchical MCMC Model (PyMC)
 
+**Model Details:**
+- MCMC sampling: 4 chains; 1 000 tune + 3 000 draws; target_accept = 0.95
 
+- Risk‐free rate (for MC and MV): default 0% (set to 1% in model)
+- Hierarchical/Multivariate Models: Used to map the relationship between the different asset classes, while minimizing overfitting.
 
 xxxx Asset class distribution charts xxxxx
 
