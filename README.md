@@ -3,13 +3,10 @@
 </p>
 
 
-# Background
-
-
 # Data
 
 
-**Data Source:** Yahoo Finance API
+**Source:** Yahoo Finance API
 
 | **Phase**         | **Period**                  | **Duration** |
 |-------------------|-----------------------------|--------------|
@@ -19,7 +16,7 @@
 
 
 
-**Limitations (data history):** 
+**Limitations:** 
 - Limited data availability prior to 2010
 - Extended history needs to be analyzed to model different market cycles
 
@@ -39,6 +36,7 @@
 | **REITs**                   | FTSE Nareit All Equity REITs Index           | Vanguard Real Estate ETF                           | `VNQ`      |
 | **Commodities**             | S&P GSCI Total Return Index                   | iShares S&P GSCI Commodity-Indexed Trust           | `GSG`      |
 
+The asset classes above represent the major public markets, helping effectively model public markets while minimizing model dimensionality. 
 
 # Optimization Functions
 
@@ -194,8 +192,50 @@ $$
 $$
 
 
-xxxx Asset class distribution charts xxxxx
+#### Asset Class Grouping
 
+| **Asset Class**            | **Group Index** | **Group Name**           |
+|----------------------------|-----------------|--------------------------|
+| **Large Cap**              | 0               | Domestic Equity          |
+| **Mid Cap**                | 0               | Domestic Equity          |
+| **Small Cap**              | 0               | Domestic Equity          |
+| **Intl Dev Equity**        | 1               | International Equity     |
+| **Emerging Market Equity** | 1               | International Equity     |
+| **Intermediate Bonds**     | 2               | Fixed Income             |
+| **T-Bill**                 | 2               | Fixed Income             |
+| **REIT**                   | 3               | Alternatives             |
+| **Commodities**            | 3               | Alternatives             |
+
+
+#### Why group asset classes? 
+- Assets within the same category (e.g. all domestic equities) often share similar risk‐return characteristics.
+- Partial pooling of means: Instead of giving each asset its own independent prior, a group-level mean can be introduced. Enables portfolio optimization using the invesment type categories.  
+
+
+#### Asset Class Mapping Distributions
+
+##### Intermediate Bonds (Monte Carlo)
+![Intermediate Bonds – Monte Carlo](./Pics/intermediate_bonds_monte.png)
+
+
+##### Small Cap (Monte Carlo)
+![Small Cap – Monte Carlo](./Pics/small_cap_monte.png)
+
+
+#### Model Weights 
+
+
+| **Asset Class**             | **Mean-Variance** | **Max-Sharpe** | **CVaR (5%)** |
+|-----------------------------|------------------:|---------------:|--------------:|
+| **Commodities**             |             0.00% |          0.00% |         0.00% |
+| **Emerging Market Equity**  |             0.00% |          0.00% |       100.00% |
+| **Intermediate Bonds**      |             0.57% |          0.31% |         0.00% |
+| **Mid Cap**                 |             0.00% |          0.00% |         0.00% |
+| **Small Cap**               |             0.91% |          0.15% |         0.00% |
+| **Large Cap**               |             1.66% |          0.48% |         0.00% |
+| **T-Bill**                  |            96.72% |         99.06% |         0.00% |
+| **Intl Dev Equity**         |             0.13% |          0.00% |         0.00% |
+| **REIT**                    |             0.00% |          0.00% |         0.00% |
 
 
 ## 3. Bayesian Hierarchical MCMC Model (PyMC)
@@ -221,60 +261,140 @@ How it works:
 
 #### Priors
 
-\mu_i \;\sim\; \mathcal{N}(0,\,0.1^2),
-\quad
-i=1,\dots,n.
+$$
+\mu_i \sim \mathcal{N}\bigl(0,\;0.1^2\bigr), 
+\quad i = 1, \dots, n.
+$$
 
 
-L \;\sim\; \mathrm{LKJCholeskyCov}\bigl(\eta,\;\mathrm{sd\_dist}\bigr),
+$$
+L \sim \mathrm{LKJCholeskyCov}\bigl(\eta,\;\mathrm{sd\_dist}\bigr),
 \quad
 \Sigma = L\,L^\top.
+$$
 
+
+- **LKJ–Cholesky:**  
+  Rather than sampling a full correlation matrix directly, we sample its Cholesky factor **L** from the LKJ distribution. This ensures positive-definiteness and efficient sampling in PyMC/PyMC3
+    
 
 #### Likelihood
 
 
-R_t \;\sim\; \mathcal{N}(\mu,\,\Sigma),
-\quad
-t=1,\dots,T.
+$$
+R_t \sim \mathcal{N}\bigl(\mu,\;\Sigma\bigr),
+\quad t = 1, \dots, T.
+$$
 
 
 #### Posterior
 
 
-p(\mu,\Sigma \mid R_{1:T})
+$$
+p\bigl(\mu,\Sigma \mid R_{1:T}\bigr)
 \;\propto\;
-\biggl[\prod_{t=1}^T\mathcal{N}(R_t\mid\mu,\Sigma)\biggr]
-\times \mathcal{N}(\mu\mid0,0.1^2I)
-\times \mathrm{LKJ}(\Sigma).
-
-xxxx Asset class distribution charts xxxxx
-
-
-
-#### Additional Model Enhancement
-
-XXXXXXXXXXXX Investr view 
+\Biggl[\prod_{t=1}^T \mathcal{N}\bigl(R_t \mid \mu,\Sigma\bigr)\Biggr]
+\;\times\;
+\mathcal{N}\bigl(\mu \mid 0,\,0.1^2\bigr)
+\;\times\;
+\mathrm{LKJ}\bigl(\Sigma \mid \eta\bigr).
+$$
 
 
-Interpretation & choice of η
-	• η = 1
-“I have no strong belief about correlations” (flat).
-	• η = 2
-Mild shrinkage toward zero correlation.
-	• η ≥ 4
-Strong shrinkage: most off‐diagonals will be near zero.
-In high dimensions, choosing η slightly above 1 (e.g.\ 1.5–2) often yields better behaved estimates than a fully uniform prior.
+#### Asset Class Mapping Distributions
 
 
-adjusted_mu = mu_post + tilt_vector
+#### Intermediate Bonds (MCMC)
+![Intermediate Bonds – MCMC](./Pics/intermediate_bonds_mcmc.png)
+
+
+#### Small Cap (MCMC)
+![Small Cap – MCMC](./Pics/small_cap_mcmc.png)
+
+
+### Enhancement - Investr Views 
+
+#### Investor Tilt (η) Interpretation
+ 
+
+The investor‐tilt parameter **η** controls how strongly we believe correlations should be shrunk toward zero in the LKJ prior.
+
+| **η** | **Interpretation**                                             | **Effect on Off-Diagonal Correlations**               |
+|:-----:|:---------------------------------------------------------------|:-----------------------------------------------------|
+| 1     | “I have no strong belief about correlations” (flat)            | No shrinkage (uniform over valid correlation matrices) |
+| 2     | Mild shrinkage toward zero correlation                         | Moderate pull of off-diagonals toward zero           |
+| ≥ 4   | Strong shrinkage: most off-diagonals will be near zero         | Heavy penalization of nonzero correlations           |
+
+---
+
+#### Asset-Class–Specific Tilt Values
+
+Apply the following η values to your tilt vector. Asset classes not listed are left un-tilted (η = 0).
+
+| **Asset Class**         | **η (Tilt)** |
+|:------------------------|:-------------|
+| Large Cap               | 2            |
+| Commodities             | 1            |
+| *All others*            | 0            |
+
+
+#### Model Weights 
+
+
+| **Asset Class**            | **Mean-Variance** | **Max-Sharpe** | **CVaR (5%)** |
+|----------------------------|------------------:|---------------:|--------------:|
+| **Commodities**            |             0.00% |          0.00% |         0.00% |
+| **Emerging Market Equity** |            14.93% |          0.00% |         0.00% |
+| **Intermediate Bonds**     |            69.68% |         99.07% |         0.00% |
+| **Mid Cap**                |             0.00% |          0.00% |         0.00% |
+| **Small Cap**              |             4.08% |          0.00% |         0.00% |
+| **Large Cap**              |             0.00% |          0.00% |         0.00% |
+| **T-Bill**                 |            11.21% |          0.00% |         0.00% |
+| **Intl Dev Equity**        |             0.10% |          0.93% |         0.00% |
+| **REIT**                   |             0.00% |          0.00% |       100.00% |
+
 
 # Results 
 
-- Log Returns used to evalaute portfolio performance because:
-  - Factors in compunding and multi-period aggregation
-  - Symmmetry for gains and losses AKA gains and losses don't cancel each other out
-  - Helps capture small changes as compunding is captured over time   
+
+Log Returns used to evalaute portfolio performance because:
+- Factors in compunding and multi-period aggregation
+- Symmmetry for gains and losses AKA gains and losses don't cancel each other out
+- Helps capture small changes as compunding is captured over time   
+
+
+$$
+r_t = \ln\!\Bigl(\frac{P_t}{P_{t-1}}\Bigr)
+$$
+
+#### Portfolio Cumulative Returns (01/01/2019 - 12/31/2024)
+
+![Portfolio Cumulative Returns](./Pics/portfolio_cumulative_returns.png)
+
+#### Yearly Returns
+
+| **Year** | **Static Aggressive** | **Static Balanced** | **Static Conservative** | **MC Mean-Variance** | **MC Max-Sharpe** | **MC CVaR (5%)** | **Bayes Mean-Variance** | **Bayes Max-Sharpe** | **Bayes CVaR (5%)** |
+|:--------:|----------------------:|--------------------:|------------------------:|--------------------:|------------------:|-----------------:|------------------------:|---------------------:|---------------------:|
+| **2020** |                5.47%  |              7.17%  |                 8.50%   |             1.19%  |           10.11%  |          10.11%  |                 9.78%   |               9.74%  |             −13.26%  |
+| **2021** |               18.24%  |             12.03%  |                 4.21%   |             0.41%  |           −5.16%  |          −5.16%  |                −2.03%   |              −3.33%  |              38.99%  |
+| **2022** |              −16.18%  |            −14.30%  |               −12.80%   |             0.35%  |          −22.72%  |         −22.72%  |               −14.71%   |             −15.59%  |             −28.47%  |
+| **2023** |               14.04%  |             10.52%  |                 7.83%   |             5.40%  |            7.67%  |           7.67%  |                 4.78%   |               3.32%  |               9.64%  |
+| **2024** |                9.72%  |              6.66%  |                 4.43%   |             5.37%  |            5.58%  |           5.58%  |                 1.40%   |              −0.64%  |               2.57%  |
+
+
+#### Full-Period Cumulative Returns
+
+| **Portfolio**                    | **Cumulative Return** |
+|:---------------------------------|----------------------:|
+| Static – Aggressive              |                59.28% |
+| Static – Balanced                |                41.64% |
+| Static – Conservative            |                23.89% |
+| Monte Carlo – Mean-Variance      |                16.51% |
+| Monte Carlo – Max-Sharpe         |                 6.95% |
+| Monte Carlo – CVaR (5%)          |                 6.95% |
+| Bayesian – Mean-Variance         |                 6.35% |
+| Bayesian – Max-Sharpe            |                −0.92% |
+| Bayesian – CVaR (5%)             |                26.87% |
 
 
 # Takeaways and Future Enhancements
@@ -296,22 +416,6 @@ Portfolio Construction guardrails:
 - Limits on allocation to a specific asset class
 - Threshold specification of deviation from asset class targets that will trigger a rebalance
 -  
-
-
-
-
-
-## Part 2 Get Started
-
-
-
-5. **Packages**  
-    - quantmod
-    - cbw
-    - xts
-    - coda
-    - bayesm
-    - ggplot2
 
 
 ##### Author: Sami Naeem
