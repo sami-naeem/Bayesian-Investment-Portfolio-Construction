@@ -112,23 +112,26 @@ How it works:
 
 $$
 \begin{aligned}
-\min_{w,\,\zeta}\quad & \zeta \;+\;\frac{1}{\alpha\,S}\sum_{s=1}^S \max\bigl\{-w^\top r_s - \zeta,\;0\bigr\} \\[6pt]
-\text{subject to}\quad 
-& \mathbf{1}^\top w = 1, \\ 
-& w_i \ge 0,\quad i=1,\dots,N.
+\min_{w,\zeta}\;&
+\zeta \;+\;\frac{1}{\alpha\,S}\sum_{s=1}^S
+\max\bigl\{-\,w^\top r_s - \zeta,\;0\bigr\}
+\\[6pt]
+\text{subject to}\;&
+\mathbf{1}^\top w = 1, \\[3pt]
+& w_i \ge 0,\quad i = 1,\dots,N.
 \end{aligned}
 $$
 
 
-The inner term is the CVaR at level~\(\alpha\), defined as
-
 $$
 \mathrm{CVaR}_\alpha(w)
 =
-\zeta \;+\;\frac{1}{\alpha\,S}\sum_{s=1}^S \max\{L_s - \zeta,\,0\},
+\zeta \;+\;\frac{1}{\alpha\,S}\sum_{s=1}^S
+\max\{L_s - \zeta,\;0\},
 \quad
-L_s = -\,w^\top r_s,
+L_s = -\,w^\top r_s.
 $$
+
 
 where
 - \(S\) is the number of simulated scenarios,  
@@ -216,24 +219,22 @@ $$
 
 
 $$
-\mu_i^{\mathrm{sim}}
-= \frac{1}{S}\sum_{s=1}^S R^{(s)}_i,
+\mu_i^{(\mathrm{sim})}
+\;=\;\frac{1}{S}\sum_{s=1}^S R_i^{(s)},
 \quad
-\Sigma_{ij}^{\mathrm{sim}}
-= \frac{1}{S-1}\sum_{s=1}^S
-  \bigl(R_i^{(s)}-\mu_i^{\mathrm{sim}}\bigr)
-  \bigl(R_j^{(s)}-\mu_j^{\mathrm{sim}}\bigr).
+\Sigma_{ij}^{(\mathrm{sim})}
+\;=\;\frac{1}{S-1}\sum_{s=1}^S
+\bigl(R_i^{(s)} - \mu_i^{(\mathrm{sim})}\bigr)
+\bigl(R_j^{(s)} - \mu_j^{(\mathrm{sim})}\bigr).
 $$
 
-$$
-\mathrm{VaR}_\alpha(w)
-= \mathrm{Quantile}\bigl\{w^\top R^{(s)},\,\alpha\bigr\},
-$$
 
-$$
-\mathrm{CVaR}_\alpha(w)
-= \mathbb{E}\bigl[w^\top R^{(s)} \mid w^\top R^{(s)} \le \mathrm{VaR}_\alpha(w)\bigr].
-$$
+where
+
+- \(S\) is the total number of Monte Carlo samples.  
+- \(R^{(s)} = (R_1^{(s)}, \dots, R_n^{(s)})\) is the vector of simulated returns in iteration \(s\).  
+- \(\mu_i^{(\mathrm{sim})}\) is the average simulated return of asset \(i\).  
+- \(\Sigma_{ij}^{(\mathrm{sim})}\) is the sample covariance between assets \(i\) and \(j\).
 
 
 #### Asset Class Mapping Distributions
