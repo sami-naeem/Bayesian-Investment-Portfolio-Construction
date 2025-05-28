@@ -1,14 +1,8 @@
 # Bayesian-Investment-Portfolio-Construction
 
-
-
-
-
-XXXXXXXXX pic  XXXXXXXXXXXXX 
-
-
-
-
+<p align="center">
+  <img src="Pics/header.png" alt="Bayesian Investment Portfolio Construction" />
+</p>
 
 
 
@@ -43,7 +37,8 @@ XXXXXXXXXXXX provide breakdown of each optimizer function ncluding what it calcu
 ## Modelling and Problem Solving Approach
 
 
-Asset Allocation Data
+**Asset Classes**
+
 
 | **Asset Class**             | **Benchmark Index**                          | **ETF Name**                                       | **Ticker** |
 |:----------------------------|:---------------------------------------------|:---------------------------------------------------|:----------:|
@@ -59,19 +54,34 @@ Asset Allocation Data
 
 
 
-XXXXXXXXXXXX conserv, bala, agg flow chart XXXXXXXXXXXX
-
-
 ### Static-Weights Portfolios 
 
 Based on Morningstar’s Target Allocation Index definitions where: 
-“Aggressive” portfolios hold > 90% in equity, 
-“Moderate/Balanced” portfolios hold 60 – 75% in equity
-“Conservative” portfolios hold < 40% in equity
+
+- **Aggressive**: 90% equity, 5% bonds, 5% cash
+- **Balanced**: 60% equity, 30% bonds, 10% cash
+- **Conservative**: 30% equity, 50% bonds, 20% cash
+
+<p align="center">
+  <img src="Pics/static_portfolio_equity_fi_split.png" alt="Static Portfolio Equity/Fixed Income Split" />
+</p>
+
+**Portfolio Allocation:**
+
+| **Asset Class**            | **Aggressive** | **Balanced** | **Conservative** |
+|----------------------------|:--------------:|:------------:|:----------------:|
+| **Large Cap**              |      20%       |     15%      |       10%        |
+| **Mid Cap**                |      20%       |     10%      |        5%        |
+| **Small Cap**              |      15%       |     10%      |        5%        |
+| **Intl. Dev Equity**       |      15%       |     10%      |        5%        |
+| **Emerging Market Equity** |      10%       |      5%      |        3%        |
+| **REIT**                   |       5%       |      5%      |        1%        |
+| **Commodities**            |       5%       |      5%      |        1%        |
+| **Intermediate Bonds**     |       5%       |     30%      |       50%        |
+| **T-Bill**                 |       5%       |     10%      |       20%        |
 
 
-xxxx diagram xxxxx
-
+XXXXXXXXXXXX conserv, bala, agg flow chart XXXXXXXXXXXX
 
 xxxx
 
