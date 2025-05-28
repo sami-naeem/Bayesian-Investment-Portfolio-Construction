@@ -276,10 +276,10 @@ How it works:
   - μₐ ~ Normal(0,0.1) for each asset a
   - Σ via an LKJ-Cholesky prior for correlations and Half-Normal priors for marginal SDs
 - Observe historical returns as a multivariate normal (with the Cholesky factor).
-- Sample the joint posterior of (μ,Σ) using PyMC’s NUTS.
+- Sample the joint posterior of (μ,Σ) using PyMC.
 - Summarize the posterior: extract posterior means of μ and empirical covariance of all μ-draws.
 - Plug into the three optimizer functions to get final weights.
-- Fully accounts for uncertainty in your estimates—if data are noisy or scarce, your posterior spreads will be wider, leading to more conservative allocations.
+- Fully accounts for uncertainty in  estimates—if data are noisy or scarce. Posterior spreads will be wider, leading to more conservative allocations.
 
 
 #### Priors
