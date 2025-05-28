@@ -122,7 +122,7 @@ $$
 
 $$
 \mathrm{VaR}_\alpha(\mathbf{w})
-= \min\Bigl\{\,v : \frac{1}{S}\sum_{s=1}^S \mathbf{1}\{R_p^{(s)} \le v\} \ge \alpha\Bigr\}.
+= \min\!\Bigl\{\,v : \frac{1}{S}\sum_{s=1}^S \mathbf{1}\{R_p^{(s)} \le v\} \ge \alpha\Bigr\}.
 $$
 
 ---
@@ -131,7 +131,8 @@ $$
 
 $$
 \mathrm{CVaR}_\alpha(\mathbf{w})
-= \eta + \frac{1}{S\,(1-\alpha)} \sum_{s=1}^S \max\{\, -R_p^{(s)} - \eta,\,0\},
+= \eta 
+\;+\; \frac{1}{S\,(1-\alpha)} \sum_{s=1}^S \max\!\{ -R_p^{(s)} - \eta,\,0\},
 \quad \eta = \mathrm{VaR}_\alpha(\mathbf{w}).
 $$
 
@@ -142,7 +143,7 @@ $$
 $$
 \begin{aligned}
 \min_{\mathbf{w},\,\eta}\quad
-& \eta \;+\;\frac{1}{S\,(1-\alpha)} \sum_{s=1}^S \max\{ -R_p^{(s)} - \eta, 0\},\\
+& \eta \;+\; \frac{1}{S\,(1-\alpha)} \sum_{s=1}^S \max\{-R_p^{(s)} - \eta,\,0\},\\
 \text{s.t.}\quad
 & \sum_{i=1}^n w_i = 1,\\
 & 0 \le w_i \le 1,\quad \forall i.
