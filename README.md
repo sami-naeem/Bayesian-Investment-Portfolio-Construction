@@ -291,7 +291,8 @@ where
 
 - Risk‐free rate (for MC and MV): default 0% (set to 1% in model)
 - Hierarchical/Multivariate Models: Used to map the relationship between the different asset classes, while minimizing overfitting.
-- Student-t distribution used instead of normal distribution to better model the more frequent outlier events. 
+- Student-t distribution used instead of normal distribution to better model the more frequent outlier events.
+- A weakly-informative prior added on degrees of freedom, which robustifies the model without impacting the correlation or hierarchical model
 
 
 How it works: 
@@ -444,7 +445,18 @@ $$
 | Bayesian – CVaR (5%)             |                26.87% |
 
 
+
+
+
 # Takeaways and Future Enhancements
+
+## Model Operationalization
+
+The following updates need to be made to operatioanlize the model: 
+
+Bayesian model: 
+- Run teststo check the tails of each asset class. Adjust the priors accordingly to treat for the fatness of the tails. Set up a more robust autoamted way to test for fatness of tails. This should be part of model monitoring. 
+
 
 #### Data Modelling:
 - Longer data history needed to model different market cycles
