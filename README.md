@@ -485,7 +485,11 @@ Use it only if you need multi-period paths that preserve temporal dependence bey
 - path-dependent constraints (turnover, rebalancing rules)
 - volatility clustering not explicitly modeled (e.g., you didn’t add GARCH/stochastic volatility)
 
-
+Trading system - design
+- min and max asset allocation limits
+  - by fund
+  - by asset class
+- 
 
 #### Data Modelling:
 - Longer data history needed to model different market cycles
