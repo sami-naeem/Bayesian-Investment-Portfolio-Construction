@@ -454,8 +454,13 @@ $$
 
 The following updates need to be made to operatioanlize the model: 
 
+Data Modelling: 
+- Create a switcher that allows to switch between diffeent types of data modelling e.g. bootstrap or option B. Allow for data to be modelled in diffeent ways, this will be part of later data monitoring pipeline
+
+
 Bayesian model: 
-- Run teststo check the tails of each asset class. Adjust the priors accordingly to treat for the fatness of the tails. Set up a more robust autoamted way to test for fatness of tails. This should be part of model monitoring. 
+- Run teststo check the tails of each asset class. Adjust the priors accordingly to treat for the fatness of the tails. Set up a more robust autoamted way to test for fatness of tails. This should be part of model monitoring.
+
 
 
 #### Data Modelling:
