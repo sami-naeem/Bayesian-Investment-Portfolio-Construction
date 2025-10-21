@@ -293,6 +293,15 @@ where
 - Hierarchical/Multivariate Models: Used to map the relationship between the different asset classes, while minimizing overfitting.
 - Student-t distribution used instead of normal distribution to better model the more frequent outlier events.
 - A weakly-informative prior added on degrees of freedom, which robustifies the model without impacting the correlation or hierarchical model
+- LKJ-Cholesky priors used to handle corss asse class correlation
+
+
+**Model Use Case:**
+
+Ideal for: 
+- One-period forecasting
+- Parameter/posterior inference
+- Generating i.i.d. scenario draws from the posterior predictive
 
 
 How it works: 
@@ -300,7 +309,7 @@ How it works:
 - Specify priors:
   - μₐ ~ Normal(0,0.1) for each asset a
   - Σ via an LKJ-Cholesky prior for correlations and Half-Normal priors for marginal SDs
-- Observe historical returns as a multivariate normal (with the Cholesky factor).
+- Observe historical returns as a multivariate student-T distribution (with the Cholesky factor).
 - Sample the joint posterior of (μ,Σ) using PyMC.
 - Summarize the posterior: extract posterior means of μ and empirical covariance of all μ-draws.
 - Plug into the three optimizer functions to get final weights.
@@ -377,13 +386,13 @@ The investor‐tilt parameter **η** controls how strongly we believe correlatio
 
 #### Asset-Class Specific Tilt Values
 
-Apply the following η values to your tilt vector. Asset classes not listed are left un-tilted (η = 0).
+Apply the following η values to your tilt vector. 
 
 | **Asset Class**         | **η (Tilt)** |
 |:------------------------|:-------------|
-| Large Cap               | 2            |
+| Large Cap               | 1            |
 | Commodities             | 1            |
-| *All others*            | 0            |
+| *All others*            | 1            |
 
 
 #### Model Weights 
@@ -458,7 +467,11 @@ Data Modelling:
 - Create a switcher that allows to switch between diffeent types of data modelling e.g. bootstrap or option B. Allow for data to be modelled in diffeent ways, this will be part of later data monitoring pipeline
 
 
+
+
 Bayesian model: 
+- Updae readme for model details for Bayesian model 
+- Set dynamic risk free rate variable that keeps updating based on the current risk free rate. Update model code to make Rf reference dynamic.  
 - Run teststo check the tails of each asset class. Adjust the priors accordingly to treat for the fatness of the tails. Set up a more robust autoamted way to test for fatness of tails. This should be part of model monitoring.
 
 
