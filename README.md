@@ -475,6 +475,15 @@ Bayesian model:
 - Run teststo check the tails of each asset class. Adjust the priors accordingly to treat for the fatness of the tails. Set up a more robust autoamted way to test for fatness of tails. This should be part of model monitoring.
 
 
+Next enhancementfor drawdown and path based modelling: 
+
+When block bootstrap is useful (optional)
+Use it only if you need multi-period paths that preserve temporal dependence beyond the mean, e.g.,
+- drawdown/sequence-of-returns risk
+- path-dependent constraints (turnover, rebalancing rules)
+- volatility clustering not explicitly modeled (e.g., you didn’t add GARCH/stochastic volatility)
+
+
 
 #### Data Modelling:
 - Longer data history needed to model different market cycles
