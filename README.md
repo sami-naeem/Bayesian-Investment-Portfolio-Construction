@@ -10,8 +10,8 @@
 
 | **Phase**         | **Period**                  | **Duration** |
 |-------------------|-----------------------------|--------------|
-| Data History      | 01/01/2013 – 12/31/2024     | 12 years     |
-| Model Training    | 01/01/2013 – 12/31/2018     | 6 years      |
+| Data History      | 08/01/2007 – 12/31/2024     | 12 years     |
+| Model Training    | 08/01/2007 – 12/31/2018     | 6 years      |
 | Model Testing     | 01/01/2019 – 12/31/2024     | 6 years      |
 
 
@@ -19,6 +19,7 @@
 **Limitations:** 
 - Limited data availability prior to 2010
 - Extended history needs to be analyzed to model different market cycles
+
 
 
 #### Asset Classes
@@ -57,6 +58,28 @@ The asset classes above represent the major public markets, helping effectively 
 ##### Why group asset classes? 
 - Assets within the same category (e.g. all domestic equities) often share similar risk‐return characteristics.
 - Partial pooling of means: Instead of giving each asset its own independent prior, a group-level mean can be introduced. Enables portfolio optimization using the invesment type categories.  
+
+
+### Data Treatment
+
+Autocorrelation: 
+- Ljung box test used to test autocorrelation for each asset class. AR orders assigned, to each asset class, based on the test results, to address the serial correlation. Adjusted MU calculated based on these AR ordes. 
+- Range Index used instead of time index to treat for data being unavailable on weekends and trading holidays.
+-   
+
+
+| Ticker                 | Adj-mu    |
+|------------------------|-----------|
+| Commodities            | -0.000186 |
+| Emerging Market Equity | -0.001030 |
+| Intermediate Bonds     |  0.000183 |
+| Mid Cap                |  0.000337 |
+| Small Cap              | -0.000010 |
+| Large Cap              | -0.000122 |
+| T-Bill                 | -0.000044 |
+| Intl Dev Equity        | -0.000546 |
+| REIT                   | -0.000376 |
+
 
 
 # Optimization Functions
@@ -268,6 +291,7 @@ where
 
 - Risk‐free rate (for MC and MV): default 0% (set to 1% in model)
 - Hierarchical/Multivariate Models: Used to map the relationship between the different asset classes, while minimizing overfitting.
+- Student-t distribution used instead of normal distribution to better model the more frequent outlier events. 
 
 
 How it works: 
