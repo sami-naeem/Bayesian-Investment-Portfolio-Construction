@@ -470,9 +470,11 @@ Data Modelling:
 
 
 Bayesian model: 
-- Updae readme for model details for Bayesian model 
+- Impleent full Bayesian stochastic volatility or GARCH inside 4.3. Provide all updated code and instructions
+- Update notes for JAX in the readme to reflect change instead of PyMC to enable GPU usage
 - Set dynamic risk free rate variable that keeps updating based on the current risk free rate. Update model code to make Rf reference dynamic.  
 - Run teststo check the tails of each asset class. Adjust the priors accordingly to treat for the fatness of the tails. Set up a more robust autoamted way to test for fatness of tails. This should be part of model monitoring.
+- Updae readme for model details for Bayesian model 
 
 
 Next enhancementfor drawdown and path based modelling: 
