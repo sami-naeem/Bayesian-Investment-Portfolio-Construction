@@ -42,10 +42,10 @@ pip install pymc arviz cvxpy yfinance numpy pandas scipy matplotlib
 Run `main.ipynb` end-to-end. Note: MCMC sampling (Section 4.3) runs 4 chains × 4,000 iterations and takes approximately 10–20 minutes depending on hardware. Saved trace artifacts are stored in `models/`.
 
 ```
-main.ipynb                              — Full analysis notebook (data → models → backtest)
-models/bayesian_hierarchical_mcmc_trace.nc      — Saved MCMC posterior draws (ArviZ NetCDF)
-models/bayesian_hierarchical_mcmc_summary.csv   — Posterior summary statistics
-Pics/                                   — Charts embedded in this README
+main.ipynb                                       — Full analysis notebook (data → models → backtest)
+models/bayesian_hierarchical_mcmc_trace.nc       — Saved MCMC posterior draws (ArviZ NetCDF)
+models/bayesian_hierarchical_mcmc_summary.csv    — Posterior summary statistics
+Pics/                                            — Charts embedded in this README
 ```
 
 ---
@@ -69,34 +69,34 @@ Pics/                                   — Charts embedded in this README
 #### Asset Classes
 
 
-| **Asset Class**             | **Benchmark Index**                          | **ETF Name**                                       | **Ticker** |
-|:----------------------------|:---------------------------------------------|:---------------------------------------------------|:----------:|
-| **Large Cap**               | S&P 500 Index                                | iShares Core S&P 500 ETF                           | `IVV`      |
-| **Mid Cap**                 | S&P MidCap 400 Index                         | iShares S&P MidCap 400 ETF                         | `IJH`      |
-| **Small Cap**               | S&P SmallCap 600 Index                       | iShares S&P SmallCap 600 ETF                       | `IJR`      |
-| **Intl. Dev. Equities**     | MSCI EAFE Index                              | Vanguard FTSE Developed Markets ETF                | `VEA`      |
-| **Emerging Market Equities**| MSCI Emerging Markets Index                  | iShares MSCI Emerging Markets ETF                  | `EEM`      |
-| **Intermediate Bonds**      | ICE U.S. Treasury 7-10 Year Bond Index       | iShares 7-10 Year Treasury Bond ETF                | `IEF`      |
-| **T-Bills**                 | ICE Short U.S. Treasury Securities Index     | iShares Short Treasury Bond ETF                    | `SHV`      |
-| **REITs**                   | FTSE Nareit All Equity REITs Index           | Vanguard Real Estate ETF                           | `VNQ`      |
-| **Commodities**             | DBIQ Optimum Yield Diversified Commodity Index | Invesco DB Commodity Index Tracking Fund         | `DBC`      |
+| **Asset Class**              | **Benchmark Index**                            | **ETF Name**                                     | **Ticker** |
+|:-----------------------------|:-----------------------------------------------|:-------------------------------------------------|:----------:|
+| **Large Cap**                | S&P 500 Index                                  | iShares Core S&P 500 ETF                         | `IVV`      |
+| **Mid Cap**                  | S&P MidCap 400 Index                           | iShares S&P MidCap 400 ETF                       | `IJH`      |
+| **Small Cap**                | S&P SmallCap 600 Index                         | iShares S&P SmallCap 600 ETF                     | `IJR`      |
+| **Intl. Dev. Equities**      | MSCI EAFE Index                                | Vanguard FTSE Developed Markets ETF              | `VEA`      |
+| **Emerging Market Equities** | MSCI Emerging Markets Index                    | iShares MSCI Emerging Markets ETF                | `EEM`      |
+| **Intermediate Bonds**       | ICE U.S. Treasury 7-10 Year Bond Index         | iShares 7-10 Year Treasury Bond ETF              | `IEF`      |
+| **T-Bills**                  | ICE Short U.S. Treasury Securities Index       | iShares Short Treasury Bond ETF                  | `SHV`      |
+| **REITs**                    | FTSE Nareit All Equity REITs Index             | Vanguard Real Estate ETF                         | `VNQ`      |
+| **Commodities**              | DBIQ Optimum Yield Diversified Commodity Index | Invesco DB Commodity Index Tracking Fund         | `DBC`      |
 
 The asset classes above represent the major public markets, helping effectively model public markets while minimizing model dimensionality.
 
 
 #### Asset Class Grouping
 
-| **Asset Class**            | **Group Index** | **Group Name**           |
-|----------------------------|-----------------|--------------------------|
-| **Large Cap**              | 0               | Domestic Equity          |
-| **Mid Cap**                | 0               | Domestic Equity          |
-| **Small Cap**              | 0               | Domestic Equity          |
-| **Intl Dev Equity**        | 1               | International Equity     |
-| **Emerging Market Equity** | 1               | International Equity     |
-| **Intermediate Bonds**     | 2               | Fixed Income             |
-| **T-Bill**                 | 2               | Fixed Income             |
-| **REIT**                   | 3               | Alternatives             |
-| **Commodities**            | 3               | Alternatives             |
+| **Asset Class**            | **Group Index** | **Group Name**       |
+|----------------------------|:---------------:|:---------------------|
+| **Large Cap**              | 0               | Domestic Equity      |
+| **Mid Cap**                | 0               | Domestic Equity      |
+| **Small Cap**              | 0               | Domestic Equity      |
+| **Intl Dev Equity**        | 1               | International Equity |
+| **Emerging Market Equity** | 1               | International Equity |
+| **Intermediate Bonds**     | 2               | Fixed Income         |
+| **T-Bill**                 | 2               | Fixed Income         |
+| **REIT**                   | 3               | Alternatives         |
+| **Commodities**            | 3               | Alternatives         |
 
 
 ##### Why group asset classes?
@@ -168,8 +168,8 @@ $$
 
 $$
 \begin{aligned}
-\min_{\mathbf{w},\,\eta}\quad
-& \eta \;+\; \frac{1}{S\,(1-\alpha)} \sum_{s=1}^S \max\{-R_p^{(s)} - \eta,\,0\},\\
+\min_{\mathbf{w},\,\zeta}\quad
+& \zeta \;+\; \frac{1}{S\,(1-\alpha)} \sum_{s=1}^S \max\{-R_p^{(s)} - \zeta,\,0\},\\
 \text{s.t.}\quad
 & \sum_{i=1}^n w_i = 1,\\
 & 0 \le w_i \le 1,\quad \forall i.
@@ -230,12 +230,12 @@ How it works:
 **Model Details:**
 - MC simulations: 10,000 draws
 - Risk-free rate: 1%
-- Hierarchical/Multivariate Models: used to map the relationship between the different asset classes, while minimizing overfitting.
+- Hierarchical/Multivariate Models: used to map the relationship between the different asset classes while minimizing overfitting.
 
 
 How it works:
 - Estimate μ and Σ from historical returns.
-- Simulate thousands of return scenarios from 𝒩(μ,Σ).
+- Simulate thousands of return scenarios from 𝒩(μ, Σ).
 - Compute distribution metrics (mean, cov, VaR, CVaR).
 - Apply each of the three optimizers (mean-variance, max-Sharpe, min-CVaR) to those metrics.
 - By simulating, you capture how random fluctuations might play out and build portfolios based on the full distribution — not just point estimates.
@@ -307,7 +307,7 @@ where
 | **Intl Dev Equity**         |             0.13% |          0.00% |         0.00% |
 | **REIT**                    |             0.00% |          0.00% |         0.00% |
 
-> **Note:** The CVaR optimizer concentrates the full allocation into Emerging Market Equity. This is a known behavior of linear CVaR minimization under historical returns: when a single asset dominates the tail-risk frontier across simulations, the optimizer collapses to it. This highlights a limitation of running CVaR on simulated Gaussian draws — it does not penalize concentration risk. A diversification constraint (e.g., max weight per asset) is listed as a future enhancement.
+> **Note:** The CVaR optimizer concentrates the full allocation into Emerging Market Equity. This is a known behavior of linear CVaR minimization: when a single asset dominates the tail-risk frontier across simulations, the optimizer collapses to it. This highlights a limitation of running CVaR on simulated Gaussian draws — it does not penalize concentration risk. A per-asset maximum weight cap is listed as a future enhancement.
 
 
 ## 3. Bayesian Hierarchical MCMC Model (PyMC)
@@ -315,7 +315,7 @@ where
 **Model Details:**
 - MCMC sampling: 4 chains; 1,000 tune + 3,000 draws; target_accept = 0.95
 - Risk-free rate: 1%
-- Hierarchical/Multivariate Models: used to map the relationship between the different asset classes, while minimizing overfitting.
+- Hierarchical/Multivariate Models: used to map the relationship between the different asset classes while minimizing overfitting.
 
 
 How it works:
@@ -348,11 +348,11 @@ $$
 **LKJ–Cholesky (model parameter η = 2):**
 Rather than sampling a full correlation matrix directly, we sample its Cholesky factor **L** from the LKJ distribution. This ensures positive-definiteness and efficient sampling in PyMC. The shape parameter η controls the prior belief about cross-asset correlations — higher values shrink off-diagonal correlations toward zero. This is a fixed model parameter set at build time, distinct from the per-asset investor tilt described below.
 
-| **η (model)** | **Prior belief on correlations**                              |
-|:-------------:|:--------------------------------------------------------------|
-| 1             | Flat — no preference over correlation structure               |
-| **2** (used)  | Mild shrinkage — moderate pull of off-diagonals toward zero   |
-| ≥ 4           | Strong shrinkage — most correlations pulled near zero         |
+| **η (model)** | **Prior belief on correlations**                            |
+|:-------------:|:------------------------------------------------------------|
+| 1             | Flat — no preference over correlation structure             |
+| **2** (used)  | Mild shrinkage — moderate pull of off-diagonals toward zero |
+| ≥ 4           | Strong shrinkage — most correlations pulled near zero       |
 
 
 #### Likelihood
@@ -380,7 +380,6 @@ $$
 
 #### Asset Class Mapping Distributions
 
-
 #### Intermediate Bonds (MCMC)
 ![Intermediate Bonds – MCMC](./Pics/intermediate_bonds_mcmc.png)
 
@@ -391,7 +390,7 @@ $$
 
 ### Enhancement — Investor Return Tilt
 
-After MCMC sampling produces posterior mean returns for each asset, the model allows an investor to inject forward-looking views before optimization. This extends the Black-Litterman intuition — where views on expected returns are overlaid on a model-derived baseline — but replaces the equilibrium CAPM prior with a full Bayesian posterior. The investor's view adjusts where the posterior mean sits before the optimizer sees it.
+After MCMC sampling produces posterior mean returns for each asset, the model allows an investor to inject forward-looking views before optimization. This extends the Black-Litterman intuition — where views on expected returns are overlaid on a model-derived baseline — but replaces the equilibrium CAPM prior with a full Bayesian posterior. The investor's view adjusts where the posterior mean sits before the optimizer sees it, producing allocations that reflect both the historical data and the investor's forward-looking conviction.
 
 #### Mechanism
 
@@ -399,15 +398,15 @@ For each asset, the investor specifies an additive tilt η expressed in the same
 
 $$\tilde{\mu}_i = \mu_i^{\text{post}} + \eta_i$$
 
-The adjusted return vector $\tilde{\mu}$ replaces the raw posterior means as input to the three optimizers (mean-variance, max-Sharpe, min-CVaR), producing allocations that reflect both the data and the investor's forward-looking conviction.
+The adjusted return vector $\tilde{\mu}$ replaces the raw posterior means as input to the three optimizers (mean-variance, max-Sharpe, min-CVaR).
 
 #### Tilt Direction Guide
 
-| **η value**        | **Investor view**                               | **Effect on allocation**                                          |
-|:------------------:|:------------------------------------------------|:------------------------------------------------------------------|
-| Positive (+)       | Bullish — expects this asset to outperform      | Optimizer allocates more to this asset vs. the no-tilt baseline   |
-| Zero               | Neutral — rely entirely on the posterior        | No adjustment; posterior mean used as-is                          |
-| Negative (−)       | Bearish — expects this asset to underperform    | Optimizer allocates less to this asset vs. the no-tilt baseline   |
+| **η value**  | **Investor view**                            | **Effect on allocation**                                        |
+|:------------:|:---------------------------------------------|:----------------------------------------------------------------|
+| Positive (+) | Bullish — expects this asset to outperform   | Optimizer allocates more to this asset vs. the no-tilt baseline |
+| Zero         | Neutral — rely entirely on the posterior     | No adjustment; posterior mean used as-is                        |
+| Negative (−) | Bearish — expects this asset to underperform | Optimizer allocates less vs. the no-tilt baseline               |
 
 > **Scale note:** Tilt values are in daily log return units (typical daily magnitude: −0.02 to +0.02). A tilt of +0.001 represents a forward-looking view of approximately +0.1% additional daily return for that asset. Larger values place increasing weight on the investor's view relative to the data-derived posterior.
 
@@ -437,12 +436,11 @@ Assets not listed carry a neutral tilt of η = 0 and are allocated purely from t
 | **Intl Dev Equity**        |             0.10% |          0.93% |         0.00% |
 | **REIT**                   |             0.00% |          0.00% |       100.00% |
 
-> **Note:** The Bayesian CVaR portfolio concentrates fully in REIT. As with the Monte Carlo CVaR result, this reflects the optimizer's behavior under Gaussian-simulated scenarios without a concentration constraint. A maximum allocation guardrail is listed as a future enhancement.
+> **Note:** The Bayesian CVaR portfolio concentrates fully in REIT. As with the Monte Carlo CVaR result, this reflects the optimizer's behavior under Gaussian-simulated scenarios without a concentration constraint. A per-asset maximum weight cap is listed as a future enhancement.
 
 ---
 
 ## Results
-
 
 Log returns used to evaluate portfolio performance because:
 - Factors in compounding and multi-period aggregation
@@ -463,28 +461,28 @@ $$
 #### Yearly Returns
 
 | **Year** | **Static Aggressive** | **Static Balanced** | **Static Conservative** | **MC Mean-Variance** | **MC Max-Sharpe** | **MC CVaR (5%)** | **Bayes Mean-Variance** | **Bayes Max-Sharpe** | **Bayes CVaR (5%)** |
-|:--------:|----------------------:|--------------------:|------------------------:|--------------------:|------------------:|-----------------:|------------------------:|---------------------:|---------------------:|
-| **2020** |                5.47%  |              7.17%  |                 8.50%   |             1.19%  |           10.11%  |          10.11%  |                 9.78%   |               9.74%  |             −13.26%  |
-| **2021** |               18.24%  |             12.03%  |                 4.21%   |             0.41%  |           −5.16%  |          −5.16%  |                −2.03%   |              −3.33%  |              38.99%  |
-| **2022** |              −16.18%  |            −14.30%  |               −12.80%   |             0.35%  |          −22.72%  |         −22.72%  |               −14.71%   |             −15.59%  |             −28.47%  |
-| **2023** |               14.04%  |             10.52%  |                 7.83%   |             5.40%  |            7.67%  |           7.67%  |                 4.78%   |               3.32%  |               9.64%  |
-| **2024** |                9.72%  |              6.66%  |                 4.43%   |             5.37%  |            5.58%  |           5.58%  |                 1.40%   |              −0.64%  |               2.57%  |
+|:--------:|----------------------:|--------------------:|------------------------:|---------------------:|------------------:|-----------------:|------------------------:|---------------------:|--------------------:|
+| **2020** |                 5.47% |               7.17% |                   8.50% |                1.19% |            10.11% |           10.11% |                   9.78% |                9.74% |             −13.26% |
+| **2021** |                18.24% |              12.03% |                   4.21% |                0.41% |            −5.16% |           −5.16% |                  −2.03% |               −3.33% |              38.99% |
+| **2022** |               −16.18% |             −14.30% |                 −12.80% |                0.35% |           −22.72% |          −22.72% |                 −14.71% |              −15.59% |             −28.47% |
+| **2023** |                14.04% |              10.52% |                   7.83% |                5.40% |             7.67% |            7.67% |                   4.78% |                3.32% |               9.64% |
+| **2024** |                 9.72% |               6.66% |                   4.43% |                5.37% |             5.58% |            5.58% |                   1.40% |               −0.64% |               2.57% |
 
 > **Note:** 2019 is excluded from the annual returns table as it represents the first year of the test period. The portfolio requires a full prior calendar year to establish a starting NAV for year-over-year comparison.
 
 #### Full-Period Cumulative Returns
 
-| **Portfolio**                    | **Cumulative Return** |
-|:---------------------------------|----------------------:|
-| Static – Aggressive              |                59.28% |
-| Static – Balanced                |                41.64% |
-| Static – Conservative            |                23.89% |
-| Monte Carlo – Mean-Variance      |                16.51% |
-| Monte Carlo – Max-Sharpe         |                 6.95% |
-| Monte Carlo – CVaR (5%)          |                 6.95% |
-| Bayesian – Mean-Variance         |                 6.35% |
-| Bayesian – Max-Sharpe            |                −0.92% |
-| Bayesian – CVaR (5%)             |                26.87% |
+| **Portfolio**               | **Cumulative Return** |
+|:----------------------------|----------------------:|
+| Static – Aggressive         |                59.28% |
+| Static – Balanced           |                41.64% |
+| Static – Conservative       |                23.89% |
+| Monte Carlo – Mean-Variance |                16.51% |
+| Monte Carlo – Max-Sharpe    |                 6.95% |
+| Monte Carlo – CVaR (5%)     |                 6.95% |
+| Bayesian – Mean-Variance    |                 6.35% |
+| Bayesian – Max-Sharpe       |                −0.92% |
+| Bayesian – CVaR (5%)        |                26.87% |
 
 ---
 
@@ -493,17 +491,14 @@ $$
 #### Data Modelling:
 - Longer data history needed to model different market cycles
   - Limited data history for some investment securities
-
-- Posteriors obtained from recent data history led to higher portfolio performance.
+- Posteriors obtained from recent data history led to higher portfolio performance
   - Explore decay functions to place more importance on recent data
-
 - **Heavy-tailed likelihood:** Replace the Gaussian observation model with a Multivariate Student-t to better capture fat tails during market dislocations (e.g., 2020, 2022 drawdowns)
 
 #### Portfolio Construction Engine:
 - The Bayesian Portfolio Construction Engine outputs asset class weights. These weights can be incorporated as an additional input in the Portfolio Construction Engine, with the weights determined by a posterior to automate portfolio rebalancing.
 
 #### Guardrails — Portfolio Construction Engine:
-
 - Asset Allocation Limits: Maximum and minimum limits on asset allocation.
 - Asset Allocation Target Deviation Threshold: Specify threshold for triggering a rebalance — e.g., 3% overall deviation from asset class targets.
 - New Portfolio Allocation Guardrails: Factor prior portfolio allocation and implement a penalty function for deviating from prior asset classes. Penalize large asset allocation shifts to minimize large turnover.
