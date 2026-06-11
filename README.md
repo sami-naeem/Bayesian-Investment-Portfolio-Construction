@@ -21,7 +21,7 @@ Backtested against Morningstar's static allocation benchmarks and a Monte Carlo 
 ![NumPy](https://img.shields.io/badge/NumPy-2.0-013243?logo=numpy&logoColor=white)
 ![SciPy](https://img.shields.io/badge/SciPy-Scientific-8CAAE6?logo=scipy&logoColor=white)
 ![Matplotlib](https://img.shields.io/badge/Matplotlib-Visualization-11557C)
-![License](https://img.shields.io/badge/License-MIT-brightgreen)
+![License](https://img.shields.io/badge/License-Apache_2.0-brightgreen)
 
 ---
 
@@ -516,10 +516,8 @@ $$
 
 ##### Author: Sami Naeem
 
-[![GitHub](https://img.shields.io/badge/GitHub-sami--naeem-black?logo=github)](https://github.com/sami-naeem)
-
 ---
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+This project is licensed under the Apache 2.0 License. See [LICENSE](LICENSE) for details.
