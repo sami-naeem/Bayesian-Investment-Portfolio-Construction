@@ -13,7 +13,15 @@ Three design choices differentiate it from industry models:
 
 Backtested against Morningstar's static allocation benchmarks and a Monte Carlo baseline over 6 years (2019–2024).
 
-**Tech stack:** Python | PyMC | ArviZ | cvxpy | yfinance | NumPy | SciPy | Matplotlib
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
+![PyMC](https://img.shields.io/badge/PyMC-Bayesian_MCMC-7B68EE)
+![ArviZ](https://img.shields.io/badge/ArviZ-Inference-4B8BBE)
+![cvxpy](https://img.shields.io/badge/cvxpy-Optimization-FF6F00)
+![yfinance](https://img.shields.io/badge/yfinance-Market_Data-235d9f)
+![NumPy](https://img.shields.io/badge/NumPy-2.0-013243?logo=numpy&logoColor=white)
+![SciPy](https://img.shields.io/badge/SciPy-Scientific-8CAAE6?logo=scipy&logoColor=white)
+![Matplotlib](https://img.shields.io/badge/Matplotlib-Visualization-11557C)
+![License](https://img.shields.io/badge/License-MIT-brightgreen)
 
 ---
 
