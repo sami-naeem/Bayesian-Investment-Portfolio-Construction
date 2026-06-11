@@ -44,17 +44,10 @@ Backtested against Morningstar's static allocation benchmarks and a Monte Carlo 
 Python 3.11. Install dependencies:
 
 ```bash
-pip install pymc arviz cvxpy yfinance numpy pandas scipy matplotlib
+pip install -r requirements.txt
 ```
 
 Run `main.ipynb` end-to-end. Note: MCMC sampling (Section 4.3) runs 4 chains × 4,000 iterations and takes approximately 10–20 minutes depending on hardware. Saved trace artifacts are stored in `models/`.
-
-```
-main.ipynb                                       — Full analysis notebook (data → models → backtest)
-models/bayesian_hierarchical_mcmc_trace.nc       — Saved MCMC posterior draws (ArviZ NetCDF)
-models/bayesian_hierarchical_mcmc_summary.csv    — Posterior summary statistics
-Pics/                                            — Charts embedded in this README
-```
 
 ---
 
