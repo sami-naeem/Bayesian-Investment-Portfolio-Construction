@@ -2,24 +2,68 @@
   <img src="Pics/header.png" alt="Bayesian Investment Portfolio Construction" />
 </p>
 
+# Bayesian MCMC Hierarchical Portfolio Construction Model
 
-# Data
+This project builds a proprietary Bayesian Hierarchical MCMC portfolio construction model — unavailable in any commercial robo-advisor — that samples the full probability distribution of returns and correlations across 9 asset classes, embedding investment uncertainty directly into the allocation.
 
+Three design choices differentiate it from industry models:
+- **Hierarchical asset grouping** — reduces overfitting by sharing information across related asset classes
+- **LKJ-Cholesky priors** — encode investor views directly on cross-asset correlations, extending Black-Litterman beyond expected returns into the full covariance structure
+- **CVaR optimization** — targets tail-risk directly rather than variance
+
+Backtested against Morningstar's static allocation benchmarks and a Monte Carlo baseline over 6 years (2019–2024).
+
+**Tech stack:** Python | PyMC | ArviZ | cvxpy | yfinance | NumPy | SciPy | Matplotlib
+
+---
+
+## Table of Contents
+
+- [Setup](#setup)
+- [Data](#data)
+- [Optimization Functions](#optimization-functions)
+- [Portfolio Models](#investment-portfolio-generator-models)
+  - [Static-Weights](#1-static-weights-portfolios)
+  - [Monte Carlo](#2-monte-carlo-sampling--distribution-metric-portfolios)
+  - [Bayesian MCMC](#3-bayesian-hierarchical-mcmc-model-pymc)
+- [Results](#results)
+- [Takeaways & Future Enhancements](#takeaways-and-future-enhancements)
+
+---
+
+## Setup
+
+Python 3.11. Install dependencies:
+
+```bash
+pip install pymc arviz cvxpy yfinance numpy pandas scipy matplotlib
+```
+
+Run `main.ipynb` end-to-end. Note: MCMC sampling (Section 4.3) runs 4 chains × 4,000 iterations and takes approximately 10–20 minutes depending on hardware. Saved trace artifacts are stored in `models/`.
+
+```
+main.ipynb                              — Full analysis notebook (data → models → backtest)
+models/bayesian_hierarchical_mcmc_trace.nc      — Saved MCMC posterior draws (ArviZ NetCDF)
+models/bayesian_hierarchical_mcmc_summary.csv   — Posterior summary statistics
+Pics/                                   — Charts embedded in this README
+```
+
+---
+
+## Data
 
 **Source:** Yahoo Finance API
 
 | **Phase**         | **Period**                  | **Duration** |
 |-------------------|-----------------------------|--------------|
-| Data History      | 08/01/2007 – 12/31/2024     | 12 years     |
-| Model Training    | 08/01/2007 – 12/31/2018     | 6 years      |
+| Data History      | 01/01/2013 – 12/31/2024     | 12 years     |
+| Model Training    | 01/01/2013 – 12/31/2018     | 6 years      |
 | Model Testing     | 01/01/2019 – 12/31/2024     | 6 years      |
 
 
-
-**Limitations:** 
+**Limitations:**
 - Limited data availability prior to 2010
-- Extended history needs to be analyzed to model different market cycles
-
+- Extended history needed to model different market cycles
 
 
 #### Asset Classes
@@ -27,17 +71,17 @@
 
 | **Asset Class**             | **Benchmark Index**                          | **ETF Name**                                       | **Ticker** |
 |:----------------------------|:---------------------------------------------|:---------------------------------------------------|:----------:|
-| **Large Cap**               | S&P 500 Index                                 | iShares Core S&P 500 ETF                           | `IVV`      |
-| **Mid Cap**                 | S&P MidCap 400 Index                          | iShares S&P MidCap 400 ETF                         | `IJH`      |
-| **Small Cap**               | S&P SmallCap 600 Index                        | iShares S&P SmallCap 600 ETF                       | `IJR`      |
-| **Intl. Dev. Equities**     | MSCI EAFE Index                               | Vanguard FTSE Developed Markets ETF                | `VEA`      |
-| **Emerging Market Equities**| MSCI Emerging Markets Index                  | Vanguard FTSE Emerging Markets ETF                 | `VWO`      |
-| **Intermediate Bonds**      | Bloomberg U.S. Aggregate Bond Index           | Vanguard Total Bond Market ETF                     | `BND`      |
-| **T-Bills**                 | ICE BofA 3-Month U.S. Treasury Bill Index     | SPDR Bloomberg 1–3 Month T-Bill ETF                | `BIL`      |
+| **Large Cap**               | S&P 500 Index                                | iShares Core S&P 500 ETF                           | `IVV`      |
+| **Mid Cap**                 | S&P MidCap 400 Index                         | iShares S&P MidCap 400 ETF                         | `IJH`      |
+| **Small Cap**               | S&P SmallCap 600 Index                       | iShares S&P SmallCap 600 ETF                       | `IJR`      |
+| **Intl. Dev. Equities**     | MSCI EAFE Index                              | Vanguard FTSE Developed Markets ETF                | `VEA`      |
+| **Emerging Market Equities**| MSCI Emerging Markets Index                  | iShares MSCI Emerging Markets ETF                  | `EEM`      |
+| **Intermediate Bonds**      | ICE U.S. Treasury 7-10 Year Bond Index       | iShares 7-10 Year Treasury Bond ETF                | `IEF`      |
+| **T-Bills**                 | ICE Short U.S. Treasury Securities Index     | iShares Short Treasury Bond ETF                    | `SHV`      |
 | **REITs**                   | FTSE Nareit All Equity REITs Index           | Vanguard Real Estate ETF                           | `VNQ`      |
-| **Commodities**             | S&P GSCI Total Return Index                   | iShares S&P GSCI Commodity-Indexed Trust           | `GSG`      |
+| **Commodities**             | DBIQ Optimum Yield Diversified Commodity Index | Invesco DB Commodity Index Tracking Fund         | `DBC`      |
 
-The asset classes above represent the major public markets, helping effectively model public markets while minimizing model dimensionality. 
+The asset classes above represent the major public markets, helping effectively model public markets while minimizing model dimensionality.
 
 
 #### Asset Class Grouping
@@ -55,39 +99,18 @@ The asset classes above represent the major public markets, helping effectively 
 | **Commodities**            | 3               | Alternatives             |
 
 
-##### Why group asset classes? 
-- Assets within the same category (e.g. all domestic equities) often share similar risk‐return characteristics.
-- Partial pooling of means: Instead of giving each asset its own independent prior, a group-level mean can be introduced. Enables portfolio optimization using the invesment type categories.  
+##### Why group asset classes?
+- Assets within the same category (e.g. all domestic equities) often share similar risk-return characteristics.
+- Partial pooling of means: instead of giving each asset its own independent prior, a group-level mean is introduced. Enables portfolio optimization using the investment type categories.
 
+---
 
-### Data Treatment
-
-Autocorrelation: 
-- Ljung box test used to test autocorrelation for each asset class. AR orders assigned, to each asset class, based on the test results, to address the serial correlation. Adjusted MU calculated based on these AR ordes. 
-- Range Index used instead of time index to treat for data being unavailable on weekends and trading holidays.
--   
-
-
-| Ticker                 | Adj-mu    |
-|------------------------|-----------|
-| Commodities            | -0.000186 |
-| Emerging Market Equity | -0.001030 |
-| Intermediate Bonds     |  0.000183 |
-| Mid Cap                |  0.000337 |
-| Small Cap              | -0.000010 |
-| Large Cap              | -0.000122 |
-| T-Bill                 | -0.000044 |
-| Intl Dev Equity        | -0.000546 |
-| REIT                   | -0.000376 |
-
-
-
-# Optimization Functions
+## Optimization Functions
 
 #### Output: Asset Class Investment Allocation Weights
-These weights will be used to construct portfolios and test the performance of all the portfolios. 
+These weights are used to construct portfolios and test the performance of all portfolios.
 
-### 1. Mean Variance Optimization 
+### 1. Mean Variance Optimization
 
 
 $$
@@ -102,15 +125,15 @@ w_i \ge 0,
 \sum_{i=1}^n w_i = 1.
 $$
 
-How it works: 
+How it works:
 
-- Takes point estimates of expected returns (μ) and the covariance matrix (Σ), computes excess returns over a risk-free rate, then finds weights w ∝ Σ⁻¹(μ – rₙ).
-- Clips negative weights to zero (no shorting) and normalizes so that weights sum to one.
+- Takes point estimates of expected returns (μ) and the covariance matrix (Σ), computes excess returns over a risk-free rate, then finds weights w ∝ Σ⁻¹(μ – rₙ).
+- Clips negative weights to zero (no shorting) and normalizes so weights sum to one.
 - Allocates more to assets with high expected return relative to their contribution to overall volatility.
 
 
 
-### 2. Maximum Sharpe‐Ratio
+### 2. Maximum Sharpe-Ratio
 
 
 $$
@@ -127,10 +150,10 @@ w_i \ge 0,
 $$
 
 
-How it works: 
+How it works:
 
-- Solves a constrained optimization to maximize Sharpe ratio.
-- Chooses the portfolio on the efficient frontier that gives the highest reward per unit of risk
+- Solves a constrained optimization to maximize the Sharpe ratio.
+- Chooses the portfolio on the efficient frontier that gives the highest reward per unit of risk.
 
 
 ### 3. Minimum CVaR Portfolio (at level α)
@@ -157,20 +180,22 @@ $$
 where
 - $S$ is the number of simulated scenarios,
 - $r_s \in \mathbb{R}^N$ are the asset returns in scenario $s$,
-- $\zeta$ is the VaR (i.e.\ the $\alpha$-quantile loss),
+- $\zeta$ is the VaR (i.e. the $\alpha$-quantile loss),
 - $\alpha \in (0,1)$ is the tail probability.
 
 
-How it works: 
+How it works:
 
-- Given a matrix of simulated returns (shape = sims × assets), defines portfolio return in each simulation and computes the Conditional Value at Risk (average of worst α-percentile losses)
-- Directly targets tail-risk: ensures that, in the worst α*100% of scenarios, the average loss is as small as possible
+- Given a matrix of simulated returns (shape = sims × assets), defines portfolio return in each simulation and computes the Conditional Value at Risk (average of worst α-percentile losses).
+- Directly targets tail-risk: ensures that, in the worst α×100% of scenarios, the average loss is as small as possible.
 
-# Investment Portfolio Generator Models
+---
 
-## 1. Static-Weights Portfolios 
+## Investment Portfolio Generator Models
 
-**Morningstar’s Target Allocation Index** used to determine the static portfolios:  
+## 1. Static-Weights Portfolios
+
+**Morningstar's Target Allocation Index** used to determine the static portfolios:
 
 - **Aggressive**: 90% equity, 5% bonds, 5% cash
 - **Balanced**: 60% equity, 30% bonds, 10% cash
@@ -202,11 +227,10 @@ How it works:
 ## 2. Monte Carlo Sampling & Distribution Metric Portfolios
 
 
-**Model Details:** 
-- MC simulations: 10 000 draws
-
-- Risk‐free rate (for MC and MV): default 0% (set to 1% in model)
-- Hierarchical/Multivariate Models: Used to map the relationship between the different asset classes, while minimizing overfitting.
+**Model Details:**
+- MC simulations: 10,000 draws
+- Risk-free rate: 1%
+- Hierarchical/Multivariate Models: used to map the relationship between the different asset classes, while minimizing overfitting.
 
 
 How it works:
@@ -214,7 +238,7 @@ How it works:
 - Simulate thousands of return scenarios from 𝒩(μ,Σ).
 - Compute distribution metrics (mean, cov, VaR, CVaR).
 - Apply each of the three optimizers (mean-variance, max-Sharpe, min-CVaR) to those metrics.
-- By simulating, you capture how random fluctuations might play out and build portfolios based on the full distribution—not just point estimates.
+- By simulating, you capture how random fluctuations might play out and build portfolios based on the full distribution — not just point estimates.
 
 
 #### Parameter Estimation
@@ -252,10 +276,10 @@ $$
 
 where
 
-- $S$ is the total number of Monte Carlo samples.  
-- $\mathbf{r}_s = \bigl(r_{1,s},\dots,r_{N,s}\bigr)^\top$ is the vector of simulated returns in iteration $s$.  
-- $\mu_i^{(\mathrm{sim})}$ is the average simulated return of asset $i$.  
-- $\Sigma_{i,j}^{(\mathrm{sim})}$ is the sample covariance between assets $i$ and $j$.  
+- $S$ is the total number of Monte Carlo samples.
+- $\mathbf{r}_s = \bigl(r_{1,s},\dots,r_{N,s}\bigr)^\top$ is the vector of simulated returns in iteration $s$.
+- $\mu_i^{(\mathrm{sim})}$ is the average simulated return of asset $i$.
+- $\Sigma_{i,j}^{(\mathrm{sim})}$ is the sample covariance between assets $i$ and $j$.
 
 
 #### Asset Class Mapping Distributions
@@ -268,7 +292,7 @@ where
 ![Small Cap – Monte Carlo](./Pics/small_cap_monte.png)
 
 
-#### Model Weights 
+#### Model Weights
 
 
 | **Asset Class**             | **Mean-Variance** | **Max-Sharpe** | **CVaR (5%)** |
@@ -283,43 +307,33 @@ where
 | **Intl Dev Equity**         |             0.13% |          0.00% |         0.00% |
 | **REIT**                    |             0.00% |          0.00% |         0.00% |
 
+> **Note:** The CVaR optimizer concentrates the full allocation into Emerging Market Equity. This is a known behavior of linear CVaR minimization under historical returns: when a single asset dominates the tail-risk frontier across simulations, the optimizer collapses to it. This highlights a limitation of running CVaR on simulated Gaussian draws — it does not penalize concentration risk. A diversification constraint (e.g., max weight per asset) is listed as a future enhancement.
+
 
 ## 3. Bayesian Hierarchical MCMC Model (PyMC)
 
 **Model Details:**
-- MCMC sampling: 4 chains; 1 000 tune + 3 000 draws; target_accept = 0.95
-
-- Risk‐free rate (for MC and MV): default 0% (set to 1% in model)
-- Hierarchical/Multivariate Models: Used to map the relationship between the different asset classes, while minimizing overfitting.
-- Student-t distribution used instead of normal distribution to better model the more frequent outlier events.
-- A weakly-informative prior added on degrees of freedom, which robustifies the model without impacting the correlation or hierarchical model
-- LKJ-Cholesky priors used to handle corss asse class correlation
+- MCMC sampling: 4 chains; 1,000 tune + 3,000 draws; target_accept = 0.95
+- Risk-free rate: 1%
+- Hierarchical/Multivariate Models: used to map the relationship between the different asset classes, while minimizing overfitting.
 
 
-**Model Use Case:**
-
-Ideal for: 
-- One-period forecasting
-- Parameter/posterior inference
-- Generating i.i.d. scenario draws from the posterior predictive
-
-
-How it works: 
+How it works:
 
 - Specify priors:
-  - μₐ ~ Normal(0,0.1) for each asset a
+  - μₐ ~ Normal(0, 0.1) for each asset a
   - Σ via an LKJ-Cholesky prior for correlations and Half-Normal priors for marginal SDs
-- Observe historical returns as a multivariate student-T distribution (with the Cholesky factor).
-- Sample the joint posterior of (μ,Σ) using PyMC.
+- Observe historical returns as a multivariate normal (with the Cholesky factor).
+- Sample the joint posterior of (μ, Σ) using PyMC.
 - Summarize the posterior: extract posterior means of μ and empirical covariance of all μ-draws.
 - Plug into the three optimizer functions to get final weights.
-- Fully accounts for uncertainty in  estimates—if data are noisy or scarce. Posterior spreads will be wider, leading to more conservative allocations.
+- Fully accounts for uncertainty in estimates — if data are noisy or scarce, posterior spreads will be wider, leading to more conservative allocations.
 
 
 #### Priors
 
 $$
-\mu_i \sim \mathcal{N}\bigl(0,\;0.1^2\bigr), 
+\mu_i \sim \mathcal{N}\bigl(0,\;0.1^2\bigr),
 \quad i = 1, \dots, n.
 $$
 
@@ -331,9 +345,15 @@ L \sim \mathrm{LKJCholeskyCov}\bigl(\eta,\;\mathrm{sd\_dist}\bigr),
 $$
 
 
-**LKJ–Cholesky:**  
-Rather than sampling a full correlation matrix directly, we sample its Cholesky factor **L** from the LKJ distribution. This ensures positive-definiteness and efficient sampling in PyMC/PyMC3
-    
+**LKJ–Cholesky (model parameter η = 2):**
+Rather than sampling a full correlation matrix directly, we sample its Cholesky factor **L** from the LKJ distribution. This ensures positive-definiteness and efficient sampling in PyMC. The shape parameter η controls the prior belief about cross-asset correlations — higher values shrink off-diagonal correlations toward zero. This is a fixed model parameter set at build time, distinct from the per-asset investor tilt described below.
+
+| **η (model)** | **Prior belief on correlations**                              |
+|:-------------:|:--------------------------------------------------------------|
+| 1             | Flat — no preference over correlation structure               |
+| **2** (used)  | Mild shrinkage — moderate pull of off-diagonals toward zero   |
+| ≥ 4           | Strong shrinkage — most correlations pulled near zero         |
+
 
 #### Likelihood
 
@@ -369,33 +389,40 @@ $$
 ![Small Cap – MCMC](./Pics/small_cap_mcmc.png)
 
 
-### Enhancement - Investor Views 
+### Enhancement — Investor Return Tilt
 
-#### Investor Tilt (η) Interpretation
- 
+After MCMC sampling produces posterior mean returns for each asset, the model allows an investor to inject forward-looking views before optimization. This extends the Black-Litterman intuition — where views on expected returns are overlaid on a model-derived baseline — but replaces the equilibrium CAPM prior with a full Bayesian posterior. The investor's view adjusts where the posterior mean sits before the optimizer sees it.
 
-The investor‐tilt parameter **η** controls how strongly we believe correlations should be shrunk toward zero in the LKJ prior.
+#### Mechanism
 
-| **η** | **Interpretation**                                             | **Effect on Off-Diagonal Correlations**               |
-|:-----:|:---------------------------------------------------------------|:-----------------------------------------------------|
-| 1     | “I have no strong belief about correlations” (flat)            | No shrinkage (uniform over valid correlation matrices) |
-| 2     | Mild shrinkage toward zero correlation                         | Moderate pull of off-diagonals toward zero           |
-| ≥ 4   | Strong shrinkage: most off-diagonals will be near zero         | Heavy penalization of nonzero correlations           |
+For each asset, the investor specifies an additive tilt η expressed in the same units as the return series (daily log returns). The tilt shifts the posterior mean upward for a bullish view or downward for a bearish view:
 
----
+$$\tilde{\mu}_i = \mu_i^{\text{post}} + \eta_i$$
 
-#### Asset-Class Specific Tilt Values
+The adjusted return vector $\tilde{\mu}$ replaces the raw posterior means as input to the three optimizers (mean-variance, max-Sharpe, min-CVaR), producing allocations that reflect both the data and the investor's forward-looking conviction.
 
-Apply the following η values to your tilt vector. 
+#### Tilt Direction Guide
 
-| **Asset Class**         | **η (Tilt)** |
-|:------------------------|:-------------|
-| Large Cap               | 1            |
-| Commodities             | 1            |
-| *All others*            | 1            |
+| **η value**        | **Investor view**                               | **Effect on allocation**                                          |
+|:------------------:|:------------------------------------------------|:------------------------------------------------------------------|
+| Positive (+)       | Bullish — expects this asset to outperform      | Optimizer allocates more to this asset vs. the no-tilt baseline   |
+| Zero               | Neutral — rely entirely on the posterior        | No adjustment; posterior mean used as-is                          |
+| Negative (−)       | Bearish — expects this asset to underperform    | Optimizer allocates less to this asset vs. the no-tilt baseline   |
+
+> **Scale note:** Tilt values are in daily log return units (typical daily magnitude: −0.02 to +0.02). A tilt of +0.001 represents a forward-looking view of approximately +0.1% additional daily return for that asset. Larger values place increasing weight on the investor's view relative to the data-derived posterior.
+
+#### Tilt Values Applied in This Model
+
+Assets not listed carry a neutral tilt of η = 0 and are allocated purely from the posterior.
+
+| **Asset Class** | **Posterior Mean (μ_post)** | **Investor Tilt (η)** | **Adjusted Mean (μ̃)** |
+|:----------------|----------------------------:|----------------------:|-----------------------:|
+| Large Cap       |                       0.069 |                  +2.0 |                  2.069 |
+| Commodities     |                      −0.001 |                  +1.0 |                  0.999 |
+| *All others*    |                     various |                   0.0 |              unchanged |
 
 
-#### Model Weights 
+#### Model Weights
 
 
 | **Asset Class**            | **Mean-Variance** | **Max-Sharpe** | **CVaR (5%)** |
@@ -410,19 +437,24 @@ Apply the following η values to your tilt vector.
 | **Intl Dev Equity**        |             0.10% |          0.93% |         0.00% |
 | **REIT**                   |             0.00% |          0.00% |       100.00% |
 
+> **Note:** The Bayesian CVaR portfolio concentrates fully in REIT. As with the Monte Carlo CVaR result, this reflects the optimizer's behavior under Gaussian-simulated scenarios without a concentration constraint. A maximum allocation guardrail is listed as a future enhancement.
 
-# Results 
+---
+
+## Results
 
 
-Log Returns used to evalaute portfolio performance because:
-- Factors in compunding and multi-period aggregation
-- Symmmetry for gains and losses AKA gains and losses don't cancel each other out
-- Helps capture small changes as compunding is captured over time   
+Log returns used to evaluate portfolio performance because:
+- Factors in compounding and multi-period aggregation
+- Symmetry for gains and losses — gains and losses do not cancel each other out
+- Helps capture small changes as compounding is captured over time
 
 
 $$
 r_t = \ln\!\Bigl(\frac{P_t}{P_{t-1}}\Bigr)
 $$
+
+> **Key result:** The Bayesian CVaR portfolio returned **26.87%** over the 6-year test period — nearly **4× the Monte Carlo CVaR equivalent (6.95%)** and outperforming Morningstar's Conservative static benchmark (23.89%).
 
 #### Portfolio Cumulative Returns (01/01/2019 - 12/31/2024)
 
@@ -438,6 +470,7 @@ $$
 | **2023** |               14.04%  |             10.52%  |                 7.83%   |             5.40%  |            7.67%  |           7.67%  |                 4.78%   |               3.32%  |               9.64%  |
 | **2024** |                9.72%  |              6.66%  |                 4.43%   |             5.37%  |            5.58%  |           5.58%  |                 1.40%   |              −0.64%  |               2.57%  |
 
+> **Note:** 2019 is excluded from the annual returns table as it represents the first year of the test period. The portfolio requires a full prior calendar year to establish a starting NAV for year-over-year comparison.
 
 #### Full-Period Cumulative Returns
 
@@ -453,59 +486,37 @@ $$
 | Bayesian – Max-Sharpe            |                −0.92% |
 | Bayesian – CVaR (5%)             |                26.87% |
 
+---
 
-
-
-
-# Takeaways and Future Enhancements
-
-## Model Operationalization
-
-The following updates need to be made to operatioanlize the model: 
-
-Data Modelling: 
-- Create a switcher that allows to switch between diffeent types of data modelling e.g. bootstrap or option B. Allow for data to be modelled in diffeent ways, this will be part of later data monitoring pipeline
-
-
-
-
-Bayesian model: 
-- Impleent full Bayesian stochastic volatility or GARCH inside 4.3. Provide all updated code and instructions
-- Update notes for JAX in the readme to reflect change instead of PyMC to enable GPU usage
-- Set dynamic risk free rate variable that keeps updating based on the current risk free rate. Update model code to make Rf reference dynamic.  
-- Run teststo check the tails of each asset class. Adjust the priors accordingly to treat for the fatness of the tails. Set up a more robust autoamted way to test for fatness of tails. This should be part of model monitoring.
-- Updae readme for model details for Bayesian model 
-
-
-Next enhancementfor drawdown and path based modelling: 
-
-When block bootstrap is useful (optional)
-Use it only if you need multi-period paths that preserve temporal dependence beyond the mean, e.g.,
-- drawdown/sequence-of-returns risk
-- path-dependent constraints (turnover, rebalancing rules)
-- volatility clustering not explicitly modeled (e.g., you didn’t add GARCH/stochastic volatility)
-
-Trading system - design
-- min and max asset allocation limits
-  - by fund
-  - by asset class
-- 
+## Takeaways and Future Enhancements
 
 #### Data Modelling:
 - Longer data history needed to model different market cycles
   - Limited data history for some investment securities
 
 - Posteriors obtained from recent data history led to higher portfolio performance.
-  - Explore decay functions to place more importance on recent data   
-  
-#### Portfolio Construction Engine: 
-- The Bayesian Portfolio Construction Engines output asset class weights. The asset class weights can be incorporatedas as another input in the Portfolio Construction Engine, and the weights be determined by a posterior to automate the portfolio rebalancing.
-  
-#### Guardrails - Portfolio Construction Engine: 
+  - Explore decay functions to place more importance on recent data
 
-- Asset Allocation Limits: Maximum and minimum limits asset allocation Limits.
-- Asset Allocation Target Deviation Threshold: Specify threshold for trigerring a rebalance e.g. 3% overall deviation from asset class targets.
-- New Portfolio Allocation Guardrails: Factor prior portfolio allocation and implement a penalty function for deviating from prior asset classes. Penalize large asset allocation shifts to minimize large turnover. 
+- **Heavy-tailed likelihood:** Replace the Gaussian observation model with a Multivariate Student-t to better capture fat tails during market dislocations (e.g., 2020, 2022 drawdowns)
+
+#### Portfolio Construction Engine:
+- The Bayesian Portfolio Construction Engine outputs asset class weights. These weights can be incorporated as an additional input in the Portfolio Construction Engine, with the weights determined by a posterior to automate portfolio rebalancing.
+
+#### Guardrails — Portfolio Construction Engine:
+
+- Asset Allocation Limits: Maximum and minimum limits on asset allocation.
+- Asset Allocation Target Deviation Threshold: Specify threshold for triggering a rebalance — e.g., 3% overall deviation from asset class targets.
+- New Portfolio Allocation Guardrails: Factor prior portfolio allocation and implement a penalty function for deviating from prior asset classes. Penalize large asset allocation shifts to minimize large turnover.
+- **Concentration Constraint:** Add a per-asset maximum weight cap (e.g., 40%) to prevent the CVaR optimizer from collapsing to a single asset.
+
+---
 
 ##### Author: Sami Naeem
 
+[![GitHub](https://img.shields.io/badge/GitHub-sami--naeem-black?logo=github)](https://github.com/sami-naeem)
+
+---
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
