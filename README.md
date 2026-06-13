@@ -41,7 +41,7 @@ Backtested against Morningstar's static allocation benchmarks and a Monte Carlo 
 
 ## Setup
 
-Python 3.11. Install dependencies:
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
